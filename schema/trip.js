@@ -11,7 +11,14 @@ type Trip {
     endDate: Date
     createdAt: Date
     updatedAt: Date
+    customer: Customer
 }
+
+type Customer {
+    username: String
+    phoneNumber: String
+}
+
 type Activity {
     activityId: String
     type: String
@@ -35,6 +42,11 @@ input NewActivityTrip {
     type: String!
     quantity: Int!
     activityDate: Date!
+}
+
+type Query {
+    getTripsByCustomerId: [Trip]
+    getTripById(tripId: String!): Trip
 }
 
 type Mutation {

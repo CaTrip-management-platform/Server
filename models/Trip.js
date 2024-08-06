@@ -78,6 +78,81 @@ class Trip {
       throw new GraphQLError("Trip not found");
     }
   }
+
+  static async getTrips(customerId) {
+    const pipeline = [
+      {
+        $match: {
+          customerId: new ObjectId(customerId),
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "customerId",
+          foreignField: "_id",
+          as: "customer",
+        },
+      },
+      {
+        $unwind: {
+          path: "$customer",
+        },
+      },
+      {
+        $project: {
+          customer: {
+            password: 0,
+            role: 0,
+            _id: 0,
+            email: 0,
+          },
+        },
+      },
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+    ];
+    const tripCollection = DB.collection("trips");
+    return tripCollection.aggregate(pipeline).toArray();
+  }
+
+  static async getTripById(tripId) {
+    const pipeline = [
+      {
+        $match: {
+          _id: new ObjectId(tripId),
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "customerId",
+          foreignField: "_id",
+          as: "customer",
+        },
+      },
+      {
+        $unwind: {
+          path: "$customer",
+        },
+      },
+      {
+        $project: {
+          customer: {
+            password: 0,
+            role: 0,
+            _id: 0,
+            email: 0,
+          },
+        },
+      },
+    ];
+    const tripCollection = DB.collection("trips");
+    return tripCollection.aggregate(pipeline).toArray();
+  }
 }
 
 module.exports = Trip;
