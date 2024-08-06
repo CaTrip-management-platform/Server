@@ -3,14 +3,15 @@ const { DB } = require(`../config/db`)
 const { ObjectId } = require("mongodb")
 
 class Activity {
-    static async addActivityForSeller(title, types, imgurls, description, tags, sellerUserId) {
+    static async addActivityForSeller(title, types, imgurls, description, tags, location, sellerUserId) {
         const postCollection = DB.collection("activities")
         let reviews = []
         let createdAt = new Date()
         let updatedAt = new Date()
-        sellerId = new ObjectId(sellerUserId)
+        let customers = []
+        let sellerId = new ObjectId(sellerUserId)
 
-        let result = await postCollection.insertOne({ title, types, imgurls, description, tags, sellerId, createdAt, updatedAt, reviews })
+        let result = await postCollection.insertOne({ title, types, imgurls, description, tags, sellerId, createdAt, updatedAt, reviews, customers, location })
         return await postCollection.findOne({ _id: result.insertedId });
     }
 
