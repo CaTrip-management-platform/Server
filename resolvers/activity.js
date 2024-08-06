@@ -3,29 +3,30 @@ const Activity = require("../models/Activity")
 
 const resolvers = {
     Query: {
-        getPosts: async () => {
+        getAllActivity: async () => {
             try {
-                const postCache = await redis.get('post:all')
-                if (postCache) {
-                    console.log("postcache")
-                    return JSON.parse(postCache)
-                }
-                else {
-                    console.log("post from mongoDB")
-                    let postResult = await Post.findAll()
-                    await redis.set('post:all', JSON.stringify(postResult))
-                    return postResult
-                }
+                let postResult = await Activity.findAll()
+                return postResult
             }
             catch (err) {
                 console.log(err)
             }
         },
-        // getPostById: async (_, args) => {
-        //     let { _id } = args
-        //     let postResult = Post.findById(_id)
-        //     return postResult
-        // }
+        searchActivity: async (_, args) => {
+            let { searchTerm } = args
+            let postResult = Activity.search(searchTerm)
+            return postResult
+        },
+        getActivityById: async (_, args) => {
+            let { _id } = args
+            let postResult = Activity.findById(_id)
+            return postResult
+        },
+        getActivityBySellerId: async (_, args) => {
+            let { sellerId } = args
+            let postResult = Activity.findBySellerId(sellerId)
+            return postResult
+        },
     },
     Mutation: {
         addActivityForSeller: async (_, args, contextValue) => {
@@ -38,8 +39,14 @@ const resolvers = {
             } else; {
                 throw GraphQLError("Only sellers can do this")
             }
-
         },
+        updateActivityForseller: async(_,args,contextValue) =>{
+            let {activityId, title, types, imgurls, description, tags } = args
+            const payload = await contextValue.authentication()
+            let postResult = Activity.updateActivityForseller(activityId, title, types, imgurls, description, tags, payload._id)
+            
+        }
+
         // commentPost: async (_, args, contextValue) => {
         //     let { _id, content } = args
         //     const payload = await contextValue.authentication()

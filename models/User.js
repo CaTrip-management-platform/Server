@@ -55,12 +55,6 @@ class User {
 
 
 
-    static async destroy({ name }) {
-        const userCollection = DB.collection("users")
-        let result = await userCollection.deleteMany({ name })
-        return `with name ${name} deleted`;
-    }
-
 
 
 

@@ -24,7 +24,6 @@ const typeDefs = `#graphql
     
     type Mutation {
         createUser(phoneNumber:String, username:String, email:String, password:String, role:String): User
-        deleteUser(name: String): Response
         login(username: String, password:String): LoginResponse
     }
 `

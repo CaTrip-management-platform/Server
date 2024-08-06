@@ -7,7 +7,7 @@ const typeDefs = `#graphql
         imgUrls: [String]
         reviews: [Review]
         description: String
-        sellerUserId: String
+        sellerId: String
         tags: [String]
         createdAt: Date
         updatedAt: Date
@@ -32,13 +32,15 @@ const typeDefs = `#graphql
     }
 
     type Query {
-        getPosts: [Activity]
-
+        getAllActivity: [Activity]
+        getActivityById(_id:String):Activity
+        searchActivity(searchTerm:String):[Activity]
+        getActivityBySellerId(sellerId:String):[Activity]
     }
     
     type Mutation {
         addActivityForSeller(title:String, types:[TicketInput], imgurls:[String], description:String, tags: [String]): Activity
-        
+        updateActivityForseller(activityId:String, title:String, types:[TicketInput], imgurls:[String], description:String, tags: [String]):Activity
     }
 `
 // getPostById(_id:String): PostWAuthor
