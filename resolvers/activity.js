@@ -30,10 +30,10 @@ const resolvers = {
     },
     Mutation: {
         addActivityForSeller: async (_, args, contextValue) => {
-            let { title, types, imgurls, description, tags } = args
+            let { title, types, imgurls, description, tags,location } = args
             const payload = await contextValue.authentication()
             if (payload.role == 'seller') {
-                let postResult = Activity.addActivityForSeller(title, types, imgurls, description, tags, payload._id)
+                let postResult = Activity.addActivityForSeller(title, types, imgurls, description, tags, location, payload._id, )
                 // await redis.del('post:all')
                 return postResult
             } else; {
@@ -43,7 +43,7 @@ const resolvers = {
         updateActivityForseller: async(_,args,contextValue) =>{
             let {activityId, title, types, imgurls, description, tags } = args
             const payload = await contextValue.authentication()
-            let postResult = Activity.updateActivityForseller(activityId, title, types, imgurls, description, tags, payload._id)
+            let postResult = Activity.updateActivityForseller(activityId, title, types, imgurls, description, tags, location, payload._id)
             
         }
 

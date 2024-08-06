@@ -11,6 +11,8 @@ const typeDefs = `#graphql
         tags: [String]
         createdAt: Date
         updatedAt: Date
+        customers:[String]
+        location:String
     }
 
     type Ticket {
@@ -39,8 +41,8 @@ const typeDefs = `#graphql
     }
     
     type Mutation {
-        addActivityForSeller(title:String, types:[TicketInput], imgurls:[String], description:String, tags: [String]): Activity
-        updateActivityForseller(activityId:String, title:String, types:[TicketInput], imgurls:[String], description:String, tags: [String]):Activity
+        addActivityForSeller(title:String, types:[TicketInput], imgurls:[String], description:String, tags: [String], location:String): Activity
+        updateActivityForseller(activityId:String, title:String, types:[TicketInput], imgurls:[String], description:String, tags: [String], location:String):Activity
     }
 `
 // getPostById(_id:String): PostWAuthor
