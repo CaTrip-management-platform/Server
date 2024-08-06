@@ -72,18 +72,36 @@ class Activity {
         return result
     }
 
-    static async updateActivityForseller(activityId, title, types, imgurls, description, tags, sellerId){
-        const postCollection = DB.collection("activities")
-        let pipeline = [
-            {
-                $match:
-                {
-                    sellerId: new ObjectId(sellerUserId),
-                },
-            },
-        ]
-        let result = await postCollection.aggregate(pipeline).toArray()
-        return result
+    static async updateActivityForseller(activityId, title, types, imgurls, description, tags, location, sellerId){
+        const activityCollection = DB.collection("activities");
+        const objectIdSellerId = new ObjectId(sellerId);
+        const objectActivityId = new ObjectId(activityId);
+        console.log(activityId, title, types, imgurls, description, tags, location, objectIdSellerId);
+    
+        // First, find the document
+        const found = await activityCollection.findOne({ _id: objectActivityId, sellerId: objectIdSellerId });
+        
+        // Check if a document was found
+        if (!found) {
+            console.log("No matching document found");
+            throw new Error("Activity not found or seller does not have permission to update");
+        }
+        
+        console.log("Found document:", found);
+    
+        // If a document was found, proceed with the update
+        const result = await activityCollection.findOneAndUpdate(
+            { _id: objectActivityId, sellerId: objectIdSellerId },
+            { $set: { title, types, imgurls, description, tags, location } },
+            { returnDocument: 'after' }
+        );
+    
+        if (!result) {
+            throw new Error("Update operation failed");
+        }
+    
+        // Different MongoDB drivers might return the result differently
+        return result.value || result;
     }
 
     static async deleteActivityForSeller (activityId, sellerId){

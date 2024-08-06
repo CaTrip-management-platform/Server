@@ -30,7 +30,7 @@ const resolvers = {
     },
     Mutation: {
         addActivityForSeller: async (_, args, contextValue) => {
-            let { title, types, imgurls, description, tags,location } = args
+            let { title, types, imgurls, description, tags, location } = args
             const payload = await contextValue.authentication()
             if (payload.role == 'seller') {
                 let postResult = Activity.addActivityForSeller(title, types, imgurls, description, tags, location, payload.id, )
@@ -41,10 +41,11 @@ const resolvers = {
             }
         },
         updateActivityForseller: async(_,args,contextValue) =>{
-            let {activityId, title, types, imgurls, description, tags } = args
+            let {activityId, title, types, imgurls, description, tags, location } = args
             const payload = await contextValue.authentication()
-            let postResult = Activity.updateActivityForseller(activityId, title, types, imgurls, description, tags, location, payload._id)
-            
+
+            let postResult = Activity.updateActivityForseller(activityId, title, types, imgurls, description, tags, location, payload.id)
+            return postResult
         },
         deleteActivityForSeller: async (_, args, contextValue) => {
             let {activityId} = args

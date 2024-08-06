@@ -28,8 +28,6 @@ startStandaloneServer(server, {
                         throw new GraphQLError("Unauthenticated")
                     }
                     let token = access_token.split(" ")[1]
-                    console.log(token, "<========token")
-                    console.log(process.env.JWT_SECRET, "<------jwtsecret")
                     let payload = jwt.verify(token, process.env.JWT_SECRET)
                     if (payload == undefined) {
                         throw new GraphQLError("You are not logged in")
