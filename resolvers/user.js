@@ -20,10 +20,6 @@ const resolvers = {
             const data = await User.create(args)
             return data
         },
-        deleteUser: async (_,args) => {
-            const data = await User.destroy(args)
-            return data
-        },
         login: async(_,args) =>{
             const result = await User.login(args)
             return { access_token: result }
