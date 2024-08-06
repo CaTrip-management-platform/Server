@@ -104,6 +104,19 @@ class Activity {
         return result.value || result;
     }
 
+    static async deleteActivityForSeller (activityId, sellerId){
+        const postCollection = DB.collection("activities")
+        const result = await postCollection.deleteOne({
+            _id: new ObjectId(activityId),
+            sellerId: new ObjectId(sellerId)
+        })
+        if(result.deletedCount === 0){
+            throw new GraphQLError ("Activity not found or you are not authorized to delete this activity")
+        }
+
+        return "Activity deleted"
+    }
+
     
 
     
