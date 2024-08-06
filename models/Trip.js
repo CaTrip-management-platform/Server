@@ -17,7 +17,7 @@ class Trip {
     }
     const tripCollection = DB.collection("trips");
 
-    let result = await tripCollection.insertOne({
+    const result = await tripCollection.insertOne({
       destination,
       activities: [],
       totalPrice: 0,
@@ -29,7 +29,26 @@ class Trip {
       updatedAt: new Date(),
     });
 
-    return result;
+    if (result.acknowledged) {
+      return { message: "success add a new trip" };
+    } else {
+      throw new GraphQLError("failed to add trip");
+    }
+  }
+
+  static async deleteTrip(tripId, customerId) {
+    const tripCollection = DB.collection("trips");
+
+    const result = await tripCollection.deleteOne({
+      _id: new ObjectId(tripId),
+      customerId: new ObjectId(customerId),
+    });
+
+    if (result.deletedCount === 0) {
+      throw new GraphQLError("failed delete the trip");
+    } else {
+      return { message: "Trip deleted" };
+    }
   }
 }
 
