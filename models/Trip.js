@@ -50,6 +50,34 @@ class Trip {
       return { message: "Trip deleted" };
     }
   }
+
+  static async addActivityTrip(activityInput, customerId) {
+    const { tripId, activityId, quantity, type, activityDate } = activityInput;
+    const tripCollection = DB.collection("trips");
+
+    const result = await tripCollection.updateOne(
+      {
+        _id: new ObjectId(tripId),
+        customerId: new ObjectId(customerId),
+      },
+      {
+        $push: {
+          activities: {
+            activityId: new ObjectId(activityId),
+            type,
+            quantity,
+            activityDate: new Date(activityDate),
+          },
+        },
+      }
+    );
+
+    if (result.modifiedCount) {
+      return { message: "Success add new activity to your trip" };
+    } else {
+      throw new GraphQLError("Trip not found");
+    }
+  }
 }
 
 module.exports = Trip;

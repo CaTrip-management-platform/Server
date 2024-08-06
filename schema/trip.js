@@ -14,6 +14,7 @@ type Trip {
 }
 type Activity {
     activityId: String
+    type: String
     quantity: Int
     activityDate: Date
 }
@@ -28,9 +29,18 @@ type Response {
     message: String!
 }
 
+input NewActivityTrip {
+    tripId: String!
+    activityId: String!
+    type: String!
+    quantity: Int!
+    activityDate: Date!
+}
+
 type Mutation {
     addTrip(tripInput: NewTrip): Response
     deleteTrip(tripId: String!): Response
+    addActivityToTrip(activityInput: NewActivityTrip): Response
     
 }
 
