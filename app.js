@@ -3,15 +3,17 @@ const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
 const userTypeDefs = require(`./schema/user`)
 const userResolver = require(`./resolvers/user`)
+const activityTypeDefs = require(`./schema/activity`)
+const activityResolver = require(`./resolvers/activity`)
 
 
 const { GraphQLError } = require("graphql");
-const { verifyToken } = require('./helpers/jwt')
+const jwt = require(`jsonwebtoken`)
 
 
 const server = new ApolloServer({
-    typeDefs: userTypeDefs,
-    resolvers: userResolver,
+    typeDefs: [userTypeDefs, activityTypeDefs],
+    resolvers: [userResolver, activityResolver],
     introspection: true
 })
 
@@ -26,7 +28,9 @@ startStandaloneServer(server, {
                         throw new GraphQLError("Unauthenticated")
                     }
                     let token = access_token.split(" ")[1]
-                    let payload = verifyToken(token)
+                    console.log(token, "<========token")
+                    console.log(process.env.JWT_SECRET, "<------jwtsecret")
+                    let payload = jwt.verify(token, process.env.JWT_SECRET)
                     if (payload == undefined) {
                         throw new GraphQLError("You are not logged in")
                     }

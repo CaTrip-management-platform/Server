@@ -2,7 +2,7 @@ const { DB } = require(`../config/db`)
 const { hashPassword, checkPassword } = require("../helpers/bcryptjs")
 const { z } = require('zod');
 const { GraphQLError } = require("graphql");
-const { signToken } = require("../helpers/jwt");
+const jwt = require(`jsonwebtoken`)
 const { ObjectId } = require('mongodb')
 
 
@@ -10,10 +10,11 @@ class User {
 
     //validation zod
     static userSchema = z.object({
-        name: z.string(),
+        phoneNumber: z.string(),
         username: z.string().min(1, "Username is required"),
         email: z.string().email("Invalid email format").min(1, "Email is required"),
-        password: z.string().min(5, "Password must be at least 5 characters long")
+        password: z.string().min(5, "Password must be at least 5 characters long"),
+        role: z.string()
     });
 
 
@@ -24,9 +25,9 @@ class User {
         return result
     }
 
-    static async create({ name, username, email, password }) {
+    static async create({ phoneNumber, username, email, password, role }) {
 
-        const validationResult = User.userSchema.safeParse({ name, username, email, password })
+        const validationResult = User.userSchema.safeParse({ phoneNumber, username, email, password, role })
 
         if (!validationResult.success) {
             throw new GraphQLError(validationResult.error.errors[0].message)
@@ -46,7 +47,7 @@ class User {
 
 
         password = hashPassword(password)
-        let result = await userCollection.insertOne({ name, username, email, password })
+        let result = await userCollection.insertOne({ phoneNumber, username, email, password,role })
         console.log(await userCollection.findOne({ _id: result.insertedId }))
         return await userCollection.findOne({ _id: result.insertedId });
     }
@@ -81,8 +82,8 @@ class User {
         if (!checkPassword(password, user.password)) {
             throw new GraphQLError("Invalid Username/Password")
         }
-        let token = signToken({ _id: user._id })
-        console.log({ _id: user._id })
+        let token = jwt.sign({id:user._id, role:user.role}, process.env.JWT_SECRET)
+        console.log({ _id: user._id, role: user.role})
         return token
     }
 
