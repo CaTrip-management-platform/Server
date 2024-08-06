@@ -33,7 +33,7 @@ const resolvers = {
             let { title, types, imgurls, description, tags,location } = args
             const payload = await contextValue.authentication()
             if (payload.role == 'seller') {
-                let postResult = Activity.addActivityForSeller(title, types, imgurls, description, tags, location, payload._id, )
+                let postResult = Activity.addActivityForSeller(title, types, imgurls, description, tags, location, payload.id, )
                 // await redis.del('post:all')
                 return postResult
             } else; {
@@ -45,6 +45,16 @@ const resolvers = {
             const payload = await contextValue.authentication()
             let postResult = Activity.updateActivityForseller(activityId, title, types, imgurls, description, tags, location, payload._id)
             
+        },
+        deleteActivityForSeller: async (_, args, contextValue) => {
+            let {activityId} = args
+            const payload = await contextValue.authentication()
+            if(payload.role === "seller"){
+                let deleteResult = await Activity.deleteActivityForSeller(activityId, payload.id)
+                return deleteResult
+            } else {
+                throw new GraphQLError("You are not authorize")
+            }
         }
 
         // commentPost: async (_, args, contextValue) => {
