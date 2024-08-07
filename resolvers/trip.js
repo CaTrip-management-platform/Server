@@ -4,8 +4,10 @@ const {
   addActivityTrip,
   getTrips,
   getTripById,
+  deleteActivityFromTrip
 } = require("../models/Trip");
 const redis = require("../config/redis");
+
 
 const resolvers = {
   Query: {
@@ -56,6 +58,14 @@ const resolvers = {
 
       return result;
     },
+    deleteActivityFromTrip: async (_, { tripId, activityId }, contextValue) => {
+      const payload = await contextValue.authentication();
+      const customerId = payload.id;
+
+      const result = await deleteActivityFromTrip(tripId, activityId, customerId);
+
+      return result;
+    }
   },
 };
 

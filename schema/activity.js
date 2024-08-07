@@ -28,7 +28,7 @@ const typeDefs = `#graphql
     type Review {
         content: String
         username: String!
-        rating: String!
+        rating: Int!
         createdAt: Date
         updatedAt: Date
     }
@@ -44,14 +44,7 @@ const typeDefs = `#graphql
         addActivityForSeller(title:String, types:[TicketInput], imgurls:[String], description:String, tags: [String], location:String): Activity
         updateActivityForseller(activityId:String, title:String, types:[TicketInput], imgurls:[String], description:String, tags: [String], location:String):Activity
         deleteActivityForSeller(activityId: String!): String
+        reviewActivity(activityId:String, content:String, rating:Int):Activity
     }
 `
-
-
-// getPostById(_id:String): PostWAuthor
-
-
-// commentPost(_id:String, content:String): Comment
-//         likePost(_id:String): Like
-
 module.exports = typeDefs

@@ -19,7 +19,6 @@ const typeDefs = `#graphql
     type Query {
         findUsers: [User]
         findUsersByUsername(username:String): [User]
-        findUserById(_id:String): User
     }
     
     type Mutation {

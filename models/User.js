@@ -92,7 +92,7 @@ class User {
         return results
     }
 
-    static async findUserById({ _id }) {
+    static async findUserById( _id ) {
         const userCollection = DB.collection("users")
         console.log(_id)
         let result = await userCollection.findOne({ _id: new ObjectId(_id) })
