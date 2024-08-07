@@ -45,7 +45,6 @@ class Activity {
     ];
     const postCollection = DB.collection("activities");
     let result = await postCollection.aggregate(pipeline).toArray();
-    console.log(result);
     return result;
   }
 
@@ -58,7 +57,6 @@ class Activity {
         },
       })
       .toArray();
-    console.log(results);
     return results;
   }
 
@@ -116,23 +114,19 @@ class Activity {
       objectIdSellerId
     );
 
-    // First, find the document
+
     const found = await activityCollection.findOne({
       _id: objectActivityId,
       sellerId: objectIdSellerId,
     });
 
-    // Check if a document was found
     if (!found) {
-      console.log("No matching document found");
       throw new Error(
         "Activity not found or seller does not have permission to update"
       );
     }
 
-    console.log("Found document:", found);
 
-    // If a document was found, proceed with the update
     const result = await activityCollection.findOneAndUpdate(
       { _id: objectActivityId, sellerId: objectIdSellerId },
       { $set: { title, types, imgurls, description, tags, location } },
@@ -143,7 +137,7 @@ class Activity {
       throw new Error("Update operation failed");
     }
 
-    // Different MongoDB drivers might return the result differently
+
     return result.value || result;
   }
 
@@ -161,6 +155,26 @@ class Activity {
 
     return "Activity deleted";
   }
+
+  static async reviewActivity(activityId, content, rating, username) {
+    const postCollection = DB.collection("activities")
+    let review = {
+        content,
+        username,
+        rating,
+        createdAt: new Date(),
+        updatedAt: new Date()
+    }
+    const result = await postCollection.updateOne(
+        { _id: new ObjectId(activityId) },
+        {
+            $push: { reviews: review },
+        }
+    );
+    const findOne = await postCollection.findOne({_id: new ObjectId(activityId) })
+    return findOne
 }
+}
+
 
 module.exports = Activity;
