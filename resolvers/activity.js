@@ -1,5 +1,6 @@
 const { GraphQLError } = require("graphql")
 const Activity = require("../models/Activity")
+const User = require("../models/User")
 
 const resolvers = {
     Query: {
@@ -56,17 +57,20 @@ const resolvers = {
             } else {
                 throw new GraphQLError("You are not authorize")
             }
-        }
+        },
 
-        // commentPost: async (_, args, contextValue) => {
-        //     let { _id, content } = args
-        //     const payload = await contextValue.authentication()
-        //     let user = await User.findUserById(payload)
-        //     let username = user.username
-        //     let result = await Post.commentPost(_id, content, username)
-        //     await redis.del('post:all')
-        //     return result
-        // },
+        reviewActivity: async (_, args, contextValue) => {
+            let { activityId, content, rating } = args
+            const payload = await contextValue.authentication()
+            console.log(payload,"<=====payload")
+            let user = await User.findUserById(payload.id)
+            console.log(user,"<==========")
+            let username = user.username
+            let result = await Activity.reviewActivity(activityId, content, rating, username)
+            // await redis.del('post:all')
+            console.log(result)
+            return result
+        },
         // likePost: async (_, args, contextValue) => {
         //     let { _id } = args
         //     const payload = await contextValue.authentication()

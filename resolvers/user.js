@@ -10,10 +10,6 @@ const resolvers = {
             const result = await User.findUsersByUsername(args)
             return result
         },
-        findUserById: async(_,args) =>{
-            const result = await User.findUserById(args)
-            return result
-        }
     },
     Mutation: {
         createUser: async (_,args) => {
