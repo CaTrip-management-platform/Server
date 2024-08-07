@@ -19,4 +19,3 @@ const resolvers = {
 module.exports = resolvers;
 
   
-  module.exports = resolvers
