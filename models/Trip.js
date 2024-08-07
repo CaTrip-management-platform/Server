@@ -85,6 +85,7 @@ class Trip {
 
 
 
+
   static async createPayment(tripId, amount) {
     const tripCollection = DB.collection("trips");
     const trip = await tripCollection.findOne({ _id: new ObjectId(tripId) });
@@ -159,6 +160,106 @@ class Trip {
     }
   }
 
+
+
+  static async getTrips(customerId) {
+    const pipeline = [
+      {
+        $match: {
+          customerId: new ObjectId(customerId),
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "customerId",
+          foreignField: "_id",
+          as: "customer",
+        },
+      },
+      {
+        $unwind: {
+          path: "$customer",
+        },
+      },
+      {
+        $project: {
+          customer: {
+            password: 0,
+            role: 0,
+            _id: 0,
+            email: 0,
+          },
+        },
+      },
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+    ];
+    const tripCollection = DB.collection("trips");
+    return tripCollection.aggregate(pipeline).toArray();
+  }
+
+  static async getTripById(tripId) {
+    const pipeline = [
+      {
+        $match: {
+          _id: new ObjectId(tripId),
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "customerId",
+          foreignField: "_id",
+          as: "customer",
+        },
+      },
+      {
+        $unwind: {
+          path: "$customer",
+        },
+      },
+      {
+        $project: {
+          customer: {
+            password: 0,
+            role: 0,
+            _id: 0,
+            email: 0,
+          },
+        },
+      },
+    ];
+    const tripCollection = DB.collection("trips");
+    return tripCollection.aggregate(pipeline).toArray();
+  }
+
+  static async deleteActivityFromTrip(tripId, activityId, customerId) {
+    const tripCollection = DB.collection("trips");
+
+    const result = await tripCollection.updateOne(
+      {
+        _id: new ObjectId(tripId),
+        customerId: new ObjectId(customerId),
+      },
+      {
+        $pull: {
+          activities: {
+            activityId: new ObjectId(activityId),
+          },
+        },
+      }
+    );
+
+    if (result.modifiedCount > 0) {
+      return { message: "Activity deleted from trip" };
+    } else {
+      throw new GraphQLError("Failed to delete activity from trip");
+    }
+  }
 
 }
 

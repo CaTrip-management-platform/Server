@@ -11,7 +11,14 @@ type Trip {
     endDate: Date
     createdAt: Date
     updatedAt: Date
+    customer: Customer
 }
+
+type Customer {
+    username: String
+    phoneNumber: String
+}
+
 type Activity {
     activityId: String
     type: String
@@ -48,6 +55,12 @@ type PaymentStatusResponse {
     success: Boolean!
     paymentStatus: String
     message: String
+    }
+
+type Query {
+    getTripsByCustomerId: [Trip]
+    getTripById(tripId: String!): Trip
+
 }
 
 type Mutation {
@@ -56,6 +69,8 @@ type Mutation {
     addActivityToTrip(activityInput: NewActivityTrip): Response
     createPayment(tripId: String!, amount: Float!): PaymentResponse!
     updatePaymentStatus(tripId:String!, orderId: String!): PaymentStatusResponse!
+    deleteActivityFromTrip(tripId: String!, activityId: String!): Response
+
 }
 
 `;

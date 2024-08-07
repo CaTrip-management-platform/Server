@@ -1,12 +1,38 @@
 
-const { createTrip, deleteTrip, addActivityTrip, createPayment, updatePaymentStatus } = require("../models/Trip");
+const {
+  createTrip,
+  deleteTrip,
+  addActivityTrip,
+  getTrips,
+  getTripById,
+  deleteActivityFromTrip,
+  createPayment,
+  updatePaymentStatus
+} = require("../models/Trip");
+const redis = require("../config/redis");
 
 
 
 const resolvers = {
   Query: {
-    
-   
+    getTripsByCustomerId: async (_, __, contextValue) => {
+      const payload = await contextValue.authentication();
+      const customerId = payload.id;
+      const tripsCache = await redis.get("trips:all");
+      if (tripsCache) {
+        return JSON.parse(tripsCache);
+      } else {
+        const result = await getTrips(customerId);
+        await redis.set("trips:all", JSON.stringify(result));
+        return result;
+      }
+    },
+    getTripById: async (_, { tripId }, contextValue) => {
+      await contextValue.authentication();
+      const result = await getTripById(tripId);
+      return result[0];
+    },
+
   },
 
   Mutation: {
@@ -48,6 +74,15 @@ const resolvers = {
     },
 
    
+
+    deleteActivityFromTrip: async (_, { tripId, activityId }, contextValue) => {
+      const payload = await contextValue.authentication();
+      const customerId = payload.id;
+
+      const result = await deleteActivityFromTrip(tripId, activityId, customerId);
+
+      return result;
+    }
   },
 
 
