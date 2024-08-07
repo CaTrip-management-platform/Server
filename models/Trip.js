@@ -103,7 +103,7 @@ class Trip {
     }; try {
       const transaction = await snap.createTransaction(parameter);
       console.log(transaction.redirect_url)
-      return { success: true, redirectUrl: transaction.redirect_url, orderId: orderId, token: transaction.token };
+      return { success: true, redirectUrl: transaction.redirect_url, orderId: orderId, token: transaction.token};
     } catch (error) {
       console.error('Error creating Midtrans transaction:', error);
       throw new GraphQLError('Error creating payment');
@@ -137,14 +137,6 @@ class Trip {
       //   default:
       //     paymentStatus = 'Unknown';
       // }
-
-      const found = await tripCollection.findOne(
-        { _id: new ObjectId(tripId) },
-       
-      );
-      if(!found){
-        throw new GraphQLError('Trip not found')
-      }
 
       const result = await tripCollection.updateOne(
         { _id: new ObjectId(tripId) },
