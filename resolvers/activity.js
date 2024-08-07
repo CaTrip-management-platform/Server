@@ -33,25 +33,25 @@ const resolvers = {
         addActivityForSeller: async (_, args, contextValue) => {
             let { title, types, imgurls, description, tags, location } = args
             const payload = await contextValue.authentication()
-            if (payload.role == 'seller') {
-                let postResult = Activity.addActivityForSeller(title, types, imgurls, description, tags, location, payload.id, )
+            if (payload.role == 'admin') {
+                let postResult = Activity.addActivityForSeller(title, types, imgurls, description, tags, location, payload.id,)
                 // await redis.del('post:all')
                 return postResult
             } else; {
                 throw GraphQLError("Only sellers can do this")
             }
         },
-        updateActivityForseller: async(_,args,contextValue) =>{
-            let {activityId, title, types, imgurls, description, tags, location } = args
+        updateActivityForseller: async (_, args, contextValue) => {
+            let { activityId, title, types, imgurls, description, tags, location } = args
             const payload = await contextValue.authentication()
 
             let postResult = Activity.updateActivityForseller(activityId, title, types, imgurls, description, tags, location, payload.id)
             return postResult
         },
         deleteActivityForSeller: async (_, args, contextValue) => {
-            let {activityId} = args
+            let { activityId } = args
             const payload = await contextValue.authentication()
-            if(payload.role === "seller"){
+            if (payload.role === "admin") {
                 let deleteResult = await Activity.deleteActivityForSeller(activityId, payload.id)
                 return deleteResult
             } else {
@@ -62,26 +62,20 @@ const resolvers = {
         reviewActivity: async (_, args, contextValue) => {
             let { activityId, content, rating } = args
             const payload = await contextValue.authentication()
-            console.log(payload,"<=====payload")
+            console.log(payload, "<=====payload")
             let user = await User.findUserById(payload.id)
-            console.log(user,"<==========")
+            console.log(user, "<==========")
             let username = user.username
             let result = await Activity.reviewActivity(activityId, content, rating, username)
             // await redis.del('post:all')
             console.log(result)
             return result
         },
-        // likePost: async (_, args, contextValue) => {
-        //     let { _id } = args
-        //     const payload = await contextValue.authentication()
-        //     let user = await User.findUserById(payload)
-        //     let username = user.username
-        //     let result = await Post.likePost(_id, username)
-        //     await redis.del('post:all')
-        //     return result
-        // }
+
 
     }
+
 }
+
 
 module.exports = resolvers
