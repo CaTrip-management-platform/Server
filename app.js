@@ -7,13 +7,15 @@ const activityTypeDefs = require(`./schema/activity`);
 const activityResolver = require(`./resolvers/activity`);
 const tripTypeDefs = require("./schema/trip");
 const tripResolver = require("./resolvers/trip");
+const travelSupportTypeDefs = require("./schema/travelTipsAI")
+const travelSupportTResolvers = require("./resolvers/travelTipsAI")
 
 const { GraphQLError } = require("graphql");
 const jwt = require(`jsonwebtoken`);
 
 const server = new ApolloServer({
-  typeDefs: [userTypeDefs, activityTypeDefs, tripTypeDefs],
-  resolvers: [userResolver, activityResolver, tripResolver],
+  typeDefs: [userTypeDefs, activityTypeDefs, tripTypeDefs, travelSupportTypeDefs],
+  resolvers: [userResolver, activityResolver, tripResolver, travelSupportTResolvers],
   introspection: true,
 });
 
