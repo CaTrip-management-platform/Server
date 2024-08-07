@@ -1,4 +1,4 @@
-const { createTrip, deleteTrip, addActivityTrip } = require("../models/Trip");
+const { createTrip, deleteTrip, addActivityTrip, deleteActivityFromTrip } = require("../models/Trip");
 
 const resolvers = {
   Query: {},
@@ -27,6 +27,14 @@ const resolvers = {
 
       return result;
     },
+    deleteActivityFromTrip: async (_, { tripId, activityId }, contextValue) => {
+      const payload = await contextValue.authentication();
+      const customerId = payload.id;
+
+      const result = await deleteActivityFromTrip(tripId, activityId, customerId);
+
+      return result;
+    }
   },
 };
 
