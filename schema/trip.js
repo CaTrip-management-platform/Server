@@ -41,7 +41,7 @@ type Mutation {
     addTrip(tripInput: NewTrip): Response
     deleteTrip(tripId: String!): Response
     addActivityToTrip(activityInput: NewActivityTrip): Response
-    
+    deleteActivityFromTrip(tripId: String!, activityId: String!): Response
 }
 
 `;

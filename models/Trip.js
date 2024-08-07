@@ -78,6 +78,32 @@ class Trip {
       throw new GraphQLError("Trip not found");
     }
   }
+
+
+  static async deleteActivityFromTrip(tripId, activityId, customerId) {
+    const tripCollection = DB.collection("trips");
+
+    const result = await tripCollection.updateOne(
+      {
+        _id: new ObjectId(tripId),
+        customerId: new ObjectId(customerId),
+      },
+      {
+        $pull: {
+          activities: {
+            activityId: new ObjectId(activityId),
+          },
+        },
+      }
+    );
+
+    if (result.modifiedCount > 0) {
+      return { message: "Activity deleted from trip" };
+    } else {
+      throw new GraphQLError("Failed to delete activity from trip");
+    }
+  }
+
 }
 
 module.exports = Trip;
