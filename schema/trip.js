@@ -37,11 +37,25 @@ input NewActivityTrip {
     activityDate: Date!
 }
 
+type PaymentResponse {
+    success: Boolean!
+    redirectUrl: String
+    orderId: String
+    token: String
+}
+
+type PaymentStatusResponse {
+    success: Boolean!
+    paymentStatus: String
+    message: String
+}
+
 type Mutation {
     addTrip(tripInput: NewTrip): Response
     deleteTrip(tripId: String!): Response
     addActivityToTrip(activityInput: NewActivityTrip): Response
-    
+    createPayment(tripId: String!, amount: Float!): PaymentResponse!
+    updatePaymentStatus(tripId:String!, orderId: String!): PaymentStatusResponse!
 }
 
 `;

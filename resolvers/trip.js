@@ -1,4 +1,4 @@
-const { createTrip, deleteTrip, addActivityTrip } = require("../models/Trip");
+const { createTrip, deleteTrip, addActivityTrip, createPayment, updatePaymentStatus } = require("../models/Trip");
 
 const resolvers = {
   Query: {},
@@ -26,8 +26,19 @@ const resolvers = {
       const result = await addActivityTrip(activityInput, customerId);
 
       return result;
+    },  
+    createPayment: async (_, { tripId, amount }) => {
+      const result = await createPayment(tripId, amount)
+      return result
     },
+    updatePaymentStatus: async (_, { tripId, orderId }) => {
+      const result = await updatePaymentStatus(tripId, orderId)
+      return result
+    }
   },
+
+
+
 };
 
 module.exports = resolvers;

@@ -39,12 +39,15 @@ const typeDefs = `#graphql
         searchActivity(searchTerm:String):[Activity]
         getActivityBySellerId(sellerId:String):[Activity]
     }
+
+
     
     type Mutation {
         addActivityForSeller(title:String, types:[TicketInput], imgurls:[String], description:String, tags: [String], location:String): Activity
         updateActivityForseller(activityId:String, title:String, types:[TicketInput], imgurls:[String], description:String, tags: [String], location:String):Activity
         deleteActivityForSeller(activityId: String!): String
         reviewActivity(activityId:String, content:String, rating:Int):Activity
+
     }
 `
 module.exports = typeDefs

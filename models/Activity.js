@@ -159,21 +159,22 @@ class Activity {
   static async reviewActivity(activityId, content, rating, username) {
     const postCollection = DB.collection("activities")
     let review = {
-        content,
-        username,
-        rating,
-        createdAt: new Date(),
-        updatedAt: new Date()
+      content,
+      username,
+      rating,
+      createdAt: new Date(),
+      updatedAt: new Date()
     }
     const result = await postCollection.updateOne(
-        { _id: new ObjectId(activityId) },
-        {
-            $push: { reviews: review },
-        }
+      { _id: new ObjectId(activityId) },
+      {
+        $push: { reviews: review },
+      }
     );
-    const findOne = await postCollection.findOne({_id: new ObjectId(activityId) })
+    const findOne = await postCollection.findOne({ _id: new ObjectId(activityId) })
     return findOne
-}
+  }
+
 }
 
 
