@@ -57,6 +57,11 @@ type PaymentStatusResponse {
     message: String
     }
 
+input UpdateTripDate {
+    startDate: Date!
+    endDate: Date!
+}
+
 type Query {
     getTripsByCustomerId: [Trip]
     getTripById(tripId: String!): Trip
@@ -70,6 +75,7 @@ type Mutation {
     createPayment(tripId: String!, amount: Float!): PaymentResponse!
     updatePaymentStatus(tripId:String!, orderId: String!): PaymentStatusResponse!
     deleteActivityFromTrip(tripId: String!, activityId: String!): Response
+    updateTripDate(dateInput: UpdateTripDate!, tripId: String!): Response
 
 }
 

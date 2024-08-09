@@ -1,7 +1,7 @@
 const { ObjectId } = require("mongodb");
 const { DB } = require("../config/db");
 const { GraphQLError } = require("graphql");
-const snap = require(`../config/midtransConfig`)
+const snap = require(`../config/midtransConfig`);
 
 class Trip {
   static async createTrip(tripInput, customerId) {
@@ -80,36 +80,35 @@ class Trip {
     }
   }
 
-
-
-
-
-
-
   static async createPayment(tripId, amount) {
     const tripCollection = DB.collection("trips");
     const trip = await tripCollection.findOne({ _id: new ObjectId(tripId) });
     if (!trip) {
-      throw new GraphQLError('Trip not found');
+      throw new GraphQLError("Trip not found");
     }
     const orderId = `ORDER-${tripId}-${Date.now()}`;
     let parameter = {
       transaction_details: {
         order_id: orderId,
-        gross_amount: amount
+        gross_amount: amount,
       },
       credit_card: {
-        secure: true
-      }
-    }; try {
+        secure: true,
+      },
+    };
+    try {
       const transaction = await snap.createTransaction(parameter);
-      console.log(transaction.redirect_url)
-      return { success: true, redirectUrl: transaction.redirect_url, orderId: orderId, token: transaction.token};
+      console.log(transaction.redirect_url);
+      return {
+        success: true,
+        redirectUrl: transaction.redirect_url,
+        orderId: orderId,
+        token: transaction.token,
+      };
     } catch (error) {
-      console.error('Error creating Midtrans transaction:', error);
-      throw new GraphQLError('Error creating payment');
+      console.error("Error creating Midtrans transaction:", error);
+      throw new GraphQLError("Error creating payment");
     }
-
   }
 
   static async updatePaymentStatus(tripId, orderId) {
@@ -144,23 +143,24 @@ class Trip {
         {
           $set: {
             paymentStatus: "paid",
-            updatedAt: new Date()
-          }
+            updatedAt: new Date(),
+          },
         }
       );
 
       if (result.modifiedCount === 1) {
-        return { success: true, paymentStatus:"paid" };
+        return { success: true, paymentStatus: "paid" };
       } else {
-        return { success: false, message: 'Trip not found or status not updated' };
+        return {
+          success: false,
+          message: "Trip not found or status not updated",
+        };
       }
     } catch (error) {
-      console.error('Error updating payment status:', error);
-      return { success: false, message: 'Error updating payment status' };
+      console.error("Error updating payment status:", error);
+      return { success: false, message: "Error updating payment status" };
     }
   }
-
-
 
   static async getTrips(customerId) {
     const pipeline = [
@@ -261,6 +261,28 @@ class Trip {
     }
   }
 
+  static async updateTripDate(dateInput, tripId, customerId) {
+    const { startDate, endDate } = dateInput;
+    if (!startDate || !endDate) {
+      throw new GraphQLError("Date must be filled");
+    }
+    const tripCollection = DB.collection("trips");
+    const filter = {
+      _id: new ObjectId(tripId),
+      customerId: new ObjectId(customerId),
+    };
+    const updateDoc = {
+      $set: {
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
+      },
+    };
+    const result = await tripCollection.updateOne(filter, updateDoc);
+    if (!result.acknowledged) {
+      throw new GraphQLError("Failed to update trip date");
+    }
+    return "Trip date successfully updated";
+  }
 }
 
 module.exports = Trip;
