@@ -68,11 +68,6 @@ const resolvers = {
       return result
     },
 
-    updatePaymentStatus: async (_, { tripId, orderId }) => {
-      const result = await updatePaymentStatus(tripId, orderId)
-      return result
-    },
-
    
 
     deleteActivityFromTrip: async (_, { tripId, activityId }, contextValue) => {
