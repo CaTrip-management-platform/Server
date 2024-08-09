@@ -51,12 +51,6 @@ type PaymentResponse {
     token: String
 }
 
-type PaymentStatusResponse {
-    success: Boolean!
-    paymentStatus: String
-    message: String
-    }
-
 type Query {
     getTripsByCustomerId: [Trip]
     getTripById(tripId: String!): Trip
@@ -68,7 +62,6 @@ type Mutation {
     deleteTrip(tripId: String!): Response
     addActivityToTrip(activityInput: NewActivityTrip): Response
     createPayment(tripId: String!, amount: Float!): PaymentResponse!
-    updatePaymentStatus(tripId:String!, orderId: String!): PaymentStatusResponse!
     deleteActivityFromTrip(tripId: String!, activityId: String!): Response
 
 }

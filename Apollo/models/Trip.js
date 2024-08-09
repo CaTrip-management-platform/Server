@@ -92,10 +92,10 @@ class Trip {
     if (!trip) {
       throw new GraphQLError('Trip not found');
     }
-    const orderId = `ORDER-${tripId}-${Date.now()}`;
+
     let parameter = {
       transaction_details: {
-        order_id: orderId,
+        order_id: tripId,
         gross_amount: amount
       },
       credit_card: {
@@ -111,56 +111,6 @@ class Trip {
     }
 
   }
-
-  static async updatePaymentStatus(tripId, orderId) {
-    const tripCollection = DB.collection("trips");
-
-    try {
-      // const transactionStatusResponse = await snap.transaction.status(orderId);
-      // console.log(transactionStatusResponse,"<=====transactionStatusResponse")
-      // const transactionStatus = transactionStatusResponse.transaction_status;
-
-      // let paymentStatus;
-      // switch (transactionStatus) {
-      //   case 'capture':
-      //   case 'settlement':
-      //     paymentStatus = 'Paid';
-      //     break;
-      //   case 'pending':
-      //     paymentStatus = 'Pending';
-      //     break;
-      //   case 'deny':
-      //   case 'cancel':
-      //   case 'expire':
-      //   case 'failure':
-      //     paymentStatus = 'Failed';
-      //     break;
-      //   default:
-      //     paymentStatus = 'Unknown';
-      // }
-
-      const result = await tripCollection.updateOne(
-        { _id: new ObjectId(tripId) },
-        {
-          $set: {
-            paymentStatus: "paid",
-            updatedAt: new Date()
-          }
-        }
-      );
-
-      if (result.modifiedCount === 1) {
-        return { success: true, paymentStatus:"paid" };
-      } else {
-        return { success: false, message: 'Trip not found or status not updated' };
-      }
-    } catch (error) {
-      console.error('Error updating payment status:', error);
-      return { success: false, message: 'Error updating payment status' };
-    }
-  }
-
-
 
   static async getTrips(customerId) {
     const pipeline = [
