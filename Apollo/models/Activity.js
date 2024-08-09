@@ -17,15 +17,15 @@ class Activity {
     let createdAt = new Date();
     let updatedAt = new Date();
     let customers = [];
-    let sellerId = new ObjectId(sellerUserId);
+    let userId = new ObjectId(sellerUserId);
 
     let result = await postCollection.insertOne({
       title,
-      types,
+      price,
       imgurls,
       description,
       tags,
-      sellerId,
+      userId,
       createdAt,
       updatedAt,
       reviews,
@@ -77,12 +77,12 @@ class Activity {
     return result[0];
   }
 
-  static async findBySellerId(sellerUserId) {
+  static async findByuserId(sellerUserId) {
     const postCollection = DB.collection("activities");
     let pipeline = [
       {
         $match: {
-          sellerId: new ObjectId(sellerUserId),
+          userId: new ObjectId(sellerUserId),
         },
       },
     ];
@@ -98,10 +98,10 @@ class Activity {
     description,
     tags,
     location,
-    sellerId
+    userId
   ) {
     const activityCollection = DB.collection("activities");
-    const objectIdSellerId = new ObjectId(sellerId);
+    const objectIduserId = new ObjectId(userId);
     const objectActivityId = new ObjectId(activityId);
     console.log(
       activityId,
@@ -111,13 +111,12 @@ class Activity {
       description,
       tags,
       location,
-      objectIdSellerId
+      objectIduserId
     );
-
 
     const found = await activityCollection.findOne({
       _id: objectActivityId,
-      sellerId: objectIdSellerId,
+      userId: objectIduserId,
     });
 
     if (!found) {
@@ -126,9 +125,8 @@ class Activity {
       );
     }
 
-
     const result = await activityCollection.findOneAndUpdate(
-      { _id: objectActivityId, sellerId: objectIdSellerId },
+      { _id: objectActivityId, userId: objectIduserId },
       { $set: { title, types, imgurls, description, tags, location } },
       { returnDocument: "after" }
     );
@@ -137,15 +135,14 @@ class Activity {
       throw new Error("Update operation failed");
     }
 
-
     return result.value || result;
   }
 
-  static async deleteActivityForSeller(activityId, sellerId) {
+  static async deleteActivityForSeller(activityId, userId) {
     const postCollection = DB.collection("activities");
     const result = await postCollection.deleteOne({
       _id: new ObjectId(activityId),
-      sellerId: new ObjectId(sellerId),
+      userId: new ObjectId(userId),
     });
     if (result.deletedCount === 0) {
       throw new GraphQLError(
@@ -157,25 +154,25 @@ class Activity {
   }
 
   static async reviewActivity(activityId, content, rating, username) {
-    const postCollection = DB.collection("activities")
+    const postCollection = DB.collection("activities");
     let review = {
       content,
       username,
       rating,
       createdAt: new Date(),
-      updatedAt: new Date()
-    }
+      updatedAt: new Date(),
+    };
     const result = await postCollection.updateOne(
       { _id: new ObjectId(activityId) },
       {
         $push: { reviews: review },
       }
     );
-    const findOne = await postCollection.findOne({ _id: new ObjectId(activityId) })
-    return findOne
+    const findOne = await postCollection.findOne({
+      _id: new ObjectId(activityId),
+    });
+    return findOne;
   }
-
 }
-
 
 module.exports = Activity;

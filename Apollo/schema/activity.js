@@ -3,26 +3,16 @@ const typeDefs = `#graphql
     type Activity {
         _id: String
         title: String!
-        types: [Ticket]
+        price: Int
         imgUrls: [String]
         reviews: [Review]
         description: String
-        sellerId: String
+        userId: String
         tags: [String]
         createdAt: Date
         updatedAt: Date
         customers:[String]
         location:String
-    }
-
-    type Ticket {
-        price: Int
-        name: String
-    }
-
-    input TicketInput {
-        price: Int
-        name: String
     }
 
     type Review {
@@ -41,13 +31,12 @@ const typeDefs = `#graphql
     }
 
 
-    
     type Mutation {
-        addActivityForSeller(title:String, types:[TicketInput], imgurls:[String], description:String, tags: [String], location:String): Activity
-        updateActivityForseller(activityId:String, title:String, types:[TicketInput], imgurls:[String], description:String, tags: [String], location:String):Activity
+        addActivityForSeller(title:String, price: Int, imgurls:[String], description:String, tags: [String], location:String): Activity
+        updateActivityForseller(activityId:String, title:String, price: String, imgurls:[String], description:String, tags: [String], location:String):Activity
         deleteActivityForSeller(activityId: String!): String
         reviewActivity(activityId:String, content:String, rating:Int):Activity
 
     }
-`
-module.exports = typeDefs
+`;
+module.exports = typeDefs;

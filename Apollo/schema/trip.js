@@ -3,7 +3,7 @@ scalar Date
 type Trip {
     _id: String
     destination: String
-    activities: [Activity]
+    activities: [ActivityTrip]
     totalPrice: Int
     paymentStatus: String
     customerId: String
@@ -19,9 +19,8 @@ type Customer {
     phoneNumber: String
 }
 
-type Activity {
+type ActivityTrip {
     activityId: String
-    type: String
     quantity: Int
     activityDate: Date
 }
@@ -39,7 +38,6 @@ type Response {
 input NewActivityTrip {
     tripId: String!
     activityId: String!
-    type: String!
     quantity: Int!
     activityDate: Date!
 }

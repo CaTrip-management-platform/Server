@@ -1,7 +1,7 @@
 const { ObjectId } = require("mongodb");
 const { DB } = require("../config/db");
 const { GraphQLError } = require("graphql");
-const snap = require(`../config/midtransConfig`)
+const snap = require(`../config/midtransConfig`);
 
 class Trip {
   static async createTrip(tripInput, customerId) {
@@ -53,7 +53,7 @@ class Trip {
   }
 
   static async addActivityTrip(activityInput, customerId) {
-    const { tripId, activityId, quantity, type, activityDate } = activityInput;
+    const { tripId, activityId, quantity, activityDate } = activityInput;
     const tripCollection = DB.collection("trips");
 
     const result = await tripCollection.updateOne(
@@ -65,7 +65,6 @@ class Trip {
         $push: {
           activities: {
             activityId: new ObjectId(activityId),
-            type,
             quantity,
             activityDate: new Date(activityDate),
           },
@@ -80,36 +79,35 @@ class Trip {
     }
   }
 
-
-
-
-
-
-
   static async createPayment(tripId, amount) {
     const tripCollection = DB.collection("trips");
     const trip = await tripCollection.findOne({ _id: new ObjectId(tripId) });
     if (!trip) {
-      throw new GraphQLError('Trip not found');
+      throw new GraphQLError("Trip not found");
     }
 
     let parameter = {
       transaction_details: {
         order_id: tripId,
-        gross_amount: amount
+        gross_amount: amount,
       },
       credit_card: {
-        secure: true
-      }
-    }; try {
+        secure: true,
+      },
+    };
+    try {
       const transaction = await snap.createTransaction(parameter);
-      console.log(transaction.redirect_url)
-      return { success: true, redirectUrl: transaction.redirect_url, orderId: orderId, token: transaction.token};
+      console.log(transaction.redirect_url);
+      return {
+        success: true,
+        redirectUrl: transaction.redirect_url,
+        orderId: orderId,
+        token: transaction.token,
+      };
     } catch (error) {
-      console.error('Error creating Midtrans transaction:', error);
-      throw new GraphQLError('Error creating payment');
+      console.error("Error creating Midtrans transaction:", error);
+      throw new GraphQLError("Error creating payment");
     }
-
   }
 
   static async getTrips(customerId) {
@@ -149,7 +147,9 @@ class Trip {
       },
     ];
     const tripCollection = DB.collection("trips");
-    return tripCollection.aggregate(pipeline).toArray();
+    const result = await tripCollection.aggregate(pipeline).toArray();
+    // console.log(result[0].activities);
+    return result;
   }
 
   static async getTripById(tripId) {
@@ -210,7 +210,6 @@ class Trip {
       throw new GraphQLError("Failed to delete activity from trip");
     }
   }
-
 }
 
 module.exports = Trip;
