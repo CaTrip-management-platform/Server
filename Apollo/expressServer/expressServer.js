@@ -12,6 +12,9 @@ const port = 3001;
 
 app.use(express.json());
 
+app.get('/', async (req, res) => {
+            res.status(200).json({ msg: "masuk" });
+});
 
 
 app.post('/', async (req, res) => {
@@ -26,7 +29,7 @@ app.post('/', async (req, res) => {
             { _id: new ObjectId(order_id) },
             {
                 $set: {
-                    paymentStatus: "paid",
+                    paymentStatus: "Paid",
                     updatedAt: new Date()
                 }
             }
