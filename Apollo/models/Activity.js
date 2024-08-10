@@ -5,6 +5,7 @@ const { ObjectId } = require("mongodb");
 class Activity {
   static async addActivityForSeller(
     title,
+    price,
     imgurls,
     description,
     tags,
