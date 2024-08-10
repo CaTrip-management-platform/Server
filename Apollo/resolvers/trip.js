@@ -7,6 +7,7 @@ const {
   deleteActivityFromTrip,
   createPayment,
   updatePaymentStatus,
+  updateTripDate,
 } = require("../models/Trip");
 const redis = require("../config/redis");
 
@@ -77,7 +78,13 @@ const resolvers = {
 
       return result;
     },
+    updateTripDate: async (_, { dateInput, tripId }, contextValue) => {
+      const payload = await contextValue.authentication();
+      const customerId = payload.id;
+
+      const result = await updateTripDate(dateInput, tripId, customerId);
+      return { message: result };
+    },
   },
 };
-
 module.exports = resolvers;

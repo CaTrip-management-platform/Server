@@ -210,6 +210,28 @@ class Trip {
       throw new GraphQLError("Failed to delete activity from trip");
     }
   }
+  static async updateTripDate(dateInput, tripId, customerId) {
+    const { startDate, endDate } = dateInput;
+    if (!startDate || !endDate) {
+      throw new GraphQLError("Date must be filled");
+    }
+    const tripCollection = DB.collection("trips");
+    const filter = {
+      _id: new ObjectId(tripId),
+      customerId: new ObjectId(customerId),
+    };
+    const updateDoc = {
+      $set: {
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
+      },
+    };
+    const result = await tripCollection.updateOne(filter, updateDoc);
+    if (!result.acknowledged) {
+      throw new GraphQLError("Failed to update trip date");
+    }
+    return "Trip date successfully updated";
+  }
 }
 
 module.exports = Trip;
