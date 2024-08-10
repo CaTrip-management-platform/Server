@@ -12,7 +12,6 @@ class User {
     username: z.string().min(1, "Username is required"),
     email: z.string().email("Invalid email format").min(1, "Email is required"),
     password: z.string().min(5, "Password must be at least 5 characters long"),
-    role: z.string(),
   });
 
   static async findAll() {
@@ -27,7 +26,6 @@ class User {
       username,
       email,
       password,
-      role: "customer",
     });
 
     if (!validationResult.success) {
@@ -52,7 +50,7 @@ class User {
       username,
       email,
       password,
-      role,
+      role: "customer",
     });
     console.log(await userCollection.findOne({ _id: result.insertedId }));
     return await userCollection.findOne({ _id: result.insertedId });
