@@ -21,13 +21,13 @@ class User {
     return result;
   }
 
-  static async create({ phoneNumber, username, email, password, role }) {
+  static async create({ phoneNumber, username, email, password }) {
     const validationResult = User.userSchema.safeParse({
       phoneNumber,
       username,
       email,
       password,
-      role,
+      role: "customer",
     });
 
     if (!validationResult.success) {

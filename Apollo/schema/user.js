@@ -22,9 +22,9 @@ const typeDefs = `#graphql
     }
     
     type Mutation {
-        createUser(phoneNumber:String, username:String, email:String, password:String, role:String): User
+        createUser(phoneNumber:String, username:String, email:String, password:String): User
         login(username: String, password:String): LoginResponse
     }
-`
+`;
 
-module.exports = typeDefs
+module.exports = typeDefs;
