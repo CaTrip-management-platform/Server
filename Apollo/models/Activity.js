@@ -5,11 +5,11 @@ const { ObjectId } = require("mongodb");
 class Activity {
   static async addActivityForSeller(
     title,
-    types,
     imgurls,
     description,
     tags,
     location,
+    coords,
     sellerUserId
   ) {
     const postCollection = DB.collection("activities");
@@ -31,6 +31,7 @@ class Activity {
       reviews,
       customers,
       location,
+      coords,
     });
     return await postCollection.findOne({ _id: result.insertedId });
   }
@@ -98,6 +99,7 @@ class Activity {
     description,
     tags,
     location,
+    coords,
     userId
   ) {
     const activityCollection = DB.collection("activities");
@@ -127,7 +129,7 @@ class Activity {
 
     const result = await activityCollection.findOneAndUpdate(
       { _id: objectActivityId, userId: objectIduserId },
-      { $set: { title, types, imgurls, description, tags, location } },
+      { $set: { title, types, imgurls, description, tags, location, coords } },
       { returnDocument: "after" }
     );
 

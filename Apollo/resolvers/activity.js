@@ -24,13 +24,13 @@ const resolvers = {
     },
     getActivityBySellerId: async (_, args) => {
       let { sellerId } = args;
-      let postResult = Activity.findBySellerId(sellerId);
+      let postResult = Activity.findByuserId(sellerId);
       return postResult;
     },
   },
   Mutation: {
     addActivityForSeller: async (_, args, contextValue) => {
-      let { title, price, imgurls, description, tags, location } = args;
+      let { title, price, imgurls, description, tags, location, coords } = args;
       const payload = await contextValue.authentication();
       if (payload.role == "admin") {
         let postResult = Activity.addActivityForSeller(
@@ -40,6 +40,7 @@ const resolvers = {
           description,
           tags,
           location,
+          coords,
           payload.id
         );
         // await redis.del('post:all')
@@ -50,8 +51,16 @@ const resolvers = {
       }
     },
     updateActivityForseller: async (_, args, contextValue) => {
-      let { activityId, title, types, imgurls, description, tags, location } =
-        args;
+      let {
+        activityId,
+        title,
+        types,
+        imgurls,
+        description,
+        tags,
+        location,
+        coords,
+      } = args;
       const payload = await contextValue.authentication();
 
       let postResult = Activity.updateActivityForseller(
@@ -62,6 +71,7 @@ const resolvers = {
         description,
         tags,
         location,
+        coords,
         payload.id
       );
       return postResult;
