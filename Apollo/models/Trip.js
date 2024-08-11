@@ -55,6 +55,11 @@ class Trip {
   static async addActivityTrip(activityInput, customerId) {
     const { tripId, activityId, quantity, activityDate } = activityInput;
     const tripCollection = DB.collection("trips");
+    const activityCollection = DB.collection("activities");
+
+    const activity = await activityCollection.findOne({
+      _id: new ObjectId(activityId),
+    });
 
     const result = await tripCollection.updateOne(
       {
@@ -68,6 +73,9 @@ class Trip {
             quantity,
             activityDate: new Date(activityDate),
           },
+        },
+        $inc: {
+          totalPrice: activity.price * quantity,
         },
       }
     );
@@ -189,6 +197,29 @@ class Trip {
 
   static async deleteActivityFromTrip(tripId, activityId, customerId) {
     const tripCollection = DB.collection("trips");
+    const activityCollection = DB.collection("activities");
+
+    const activity = await activityCollection.findOne({
+      _id: new ObjectId(activityId),
+    });
+
+    const trip = await tripCollection.findOne(
+      {
+        _id: new ObjectId(tripId),
+        customerId: new ObjectId(customerId),
+        "activities.activityId": new ObjectId(activityId),
+      },
+      {
+        projection: { "activities.$": 1 },
+      }
+    );
+
+    if (!trip || trip.activities.length === 0) {
+      throw new GraphQLError("Activity not found in the trip");
+    }
+
+    const quantity = trip.activities[0].quantity;
+    const price = activity.price;
 
     const result = await tripCollection.updateOne(
       {
@@ -200,6 +231,9 @@ class Trip {
           activities: {
             activityId: new ObjectId(activityId),
           },
+        },
+        $inc: {
+          totalPrice: -(price * quantity),
         },
       }
     );
