@@ -169,8 +169,6 @@ class Trip {
         },
       },
       { $unwind: "$activities" },
-
-      // Lookup from activities collection
       {
         $lookup: {
           from: "activities",
@@ -180,10 +178,8 @@ class Trip {
         }
       },
 
-      // Unwind the newly created activity array
       { $unwind: "$activities.Activity" },
 
-      // Group back to reconstruct the original structure
       {
         $group: {
           _id: "$_id",
