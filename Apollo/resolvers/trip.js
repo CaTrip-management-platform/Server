@@ -8,6 +8,7 @@ const {
   createPayment,
   updatePaymentStatus,
   updateTripDate,
+  updateTripActivityQuantity
 } = require("../models/Trip");
 const redis = require("../config/redis");
 
