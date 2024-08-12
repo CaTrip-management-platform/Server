@@ -94,7 +94,7 @@ class Trip {
     if (!trip) {
       throw new GraphQLError("Trip not found");
     }
-
+    const orderId = tripId
     let parameter = {
       transaction_details: {
         order_id: tripId,
