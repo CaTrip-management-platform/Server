@@ -6,7 +6,7 @@ class Activity {
   static async addActivityForSeller(
     title,
     price,
-    imgurls,
+    imgUrls,
     description,
     tags,
     location,
@@ -23,7 +23,7 @@ class Activity {
     let result = await postCollection.insertOne({
       title,
       price,
-      imgurls,
+      imgUrls,
       description,
       tags,
       userId,
@@ -96,7 +96,7 @@ class Activity {
     activityId,
     title,
     types,
-    imgurls,
+    imgUrls,
     description,
     tags,
     location,
@@ -110,7 +110,7 @@ class Activity {
       activityId,
       title,
       types,
-      imgurls,
+      imgUrls,
       description,
       tags,
       location,
@@ -130,7 +130,7 @@ class Activity {
 
     const result = await activityCollection.findOneAndUpdate(
       { _id: objectActivityId, userId: objectIduserId },
-      { $set: { title, types, imgurls, description, tags, location, coords } },
+      { $set: { title, types, imgUrls, description, tags, location, coords } },
       { returnDocument: "after" }
     );
 
