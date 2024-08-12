@@ -26,39 +26,6 @@ type ActivityTrip {
     price: Int
 }
 
-type TripResult {
-    _id: String
-    destination: String
-    activities: [ActivityTripResult]
-    totalPrice: Int
-    paymentStatus: String
-    customerId: String
-    startDate: Date
-    endDate: Date
-    createdAt: Date
-    updatedAt: Date
-    customer: Customer
-}
-
-type ActivityTripResult {
-    activityId: String
-    quantity: Int
-    activityDate: Date
-    price: Int
-    Activity: ActivityResult
-}
-
-type ActivityResult {
-    _id: String
-    title: String!
-    price: Int
-    imgUrls: [String]
-    description: String
-    tags: [String]
-    location: String
-}
-
-
 input NewTrip {
     destination: String!
     startDate: Date!
@@ -90,7 +57,7 @@ input UpdateTripDate {
 
 type Query {
     getTripsByCustomerId: [Trip]
-    getTripById(tripId: String!): TripResult
+    getTripById(tripId: String!): Trip
 
 }
 

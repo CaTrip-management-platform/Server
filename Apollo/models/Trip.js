@@ -168,52 +168,33 @@ class Trip {
           _id: new ObjectId(tripId),
         },
       },
-      { $unwind: "$activities" },
-
-      // Lookup from activities collection
       {
         $lookup: {
-          from: "activities",
-          localField: "activities.activityId",
+          from: "users",
+          localField: "customerId",
           foreignField: "_id",
-          as: "activities.Activity"
-        }
+          as: "customer",
+        },
       },
-
-      // Unwind the newly created activity array
-      { $unwind: "$activities.Activity" },
-
-      // Group back to reconstruct the original structure
       {
-        $group: {
-          _id: "$_id",
-          destination: { $first: "$destination" },
-          activities: { $push: "$activities" },
-          totalPrice: { $first: "$totalPrice" },
-          paymentStatus: { $first: "$paymentStatus" },
-          customerId: { $first: "$customerId" },
-          startDate: { $first: "$startDate" },
-          endDate: { $first: "$endDate" },
-          createdAt: { $first: "$createdAt" },
-          updatedAt: { $first: "$updatedAt" },
-          customer: { $first: "$customer" }
-        }
-      }
+        $unwind: {
+          path: "$customer",
+        },
+      },
+      {
+        $project: {
+          customer: {
+            password: 0,
+            role: 0,
+            _id: 0,
+            email: 0,
+          },
+        },
+      },
     ];
     const tripCollection = DB.collection("trips");
-    const result = await tripCollection.aggregate(pipeline).toArray();
-    console.log(result[0].activities)
-    return result
+    return tripCollection.aggregate(pipeline).toArray();
   }
-
-
-
-
-
-
-
-
-
 
   static async deleteActivityFromTrip(tripId, activityId, customerId) {
     const tripCollection = DB.collection("trips");
@@ -314,11 +295,11 @@ class Trip {
       const item = found.activities.find(item => item.activityId.equals(new ObjectId(activityId)));
       const beforeQuantity = item.quantity
       const beforePrice = item.price
-
+      
 
       let after = found.activities.map(item => {
         if (item.activityId.equals(new ObjectId(activityId))) {
-          return { ...item, quantity: newQuantity, price: beforePrice / beforeQuantity * newQuantity };
+          return { ...item, quantity: newQuantity, price: beforePrice/beforeQuantity*newQuantity };
         }
         return item;
       })
@@ -333,7 +314,7 @@ class Trip {
       // console.log("after: ", after)
       // console.log("newTotalPrice: ", newTotalPrice)
 
-
+      
 
       const result = await tripCollection.findOneAndUpdate(filter, {
         $set: {
