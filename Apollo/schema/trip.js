@@ -23,6 +23,7 @@ type ActivityTrip {
     activityId: String
     quantity: Int
     activityDate: Date
+    price: Int
 }
 
 input NewTrip {

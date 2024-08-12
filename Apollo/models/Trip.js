@@ -71,6 +71,7 @@ class Trip {
           activities: {
             activityId: new ObjectId(activityId),
             quantity,
+            price: activity.price * quantity,
             activityDate: new Date(activityDate),
           },
         },
@@ -266,47 +267,75 @@ class Trip {
     }
     return "Trip date successfully updated";
   }
+
+
+
+
   static async updateTripActivityQuantity(newQuantity, tripId, activityId, customerId) {
     const tripCollection = DB.collection("trips");
     const filter = {
       _id: new ObjectId(tripId),
       customerId: new ObjectId(customerId),
-      "activities.activityId": activityId
     };
 
-    const update = {
-      $set: {
-        "activities.$.quantity": newQuantity
-      }
-    };
+    // const update = {
+    //   $set: {
+    //     "activities.$.quantity": newQuantity
+    //   }
+    // };
 
     const options = {
       returnDocument: 'after'
     };
 
     try {
-      const result = await tripCollection.findOneAndUpdate(filter, update, options);
+      const found = await tripCollection.findOne(filter);
 
-      if (!result.value) {
-        throw new Error("Trip not found or you don't have permission to update this trip");
-      }
+      //getquantity
+      const item = found.activities.find(item => item.activityId.equals(new ObjectId(activityId)));
+      const beforeQuantity = item.quantity
+      const beforePrice = item.price
+      
 
-      // // Recalculate total price if needed
-      // // This is a placeholder - you'll need to implement the actual price calculation logic
-      // const newTotalPrice = calculateNewTotalPrice(result.value);
+      let after = found.activities.map(item => {
+        if (item.activityId.equals(new ObjectId(activityId))) {
+          return { ...item, quantity: newQuantity, price: beforePrice/beforeQuantity*newQuantity };
+        }
+        return item;
+      })
 
-      // // Update the total price
-      // await tripCollection.updateOne(
-      //   { _id: new ObjectId(tripId) },
-      //   { $set: { totalPrice: newTotalPrice } }
-      // );
+      const newTotalPrice = after.reduce((acc, item) => {
+        return acc + item.price;
+      }, 0);
+
+
+      // console.log("beforeQuantity: ", beforeQuantity)
+      // console.log("afterQuantity: ", newQuantity)
+      // console.log("after: ", after)
+      // console.log("newTotalPrice: ", newTotalPrice)
+
+      
+
+      const result = await tripCollection.findOneAndUpdate(filter, {
+        $set: {
+          activities: after,
+          totalPrice: newTotalPrice
+        }
+      }, options)
 
       return "Activity quantity updated successfully";
     } catch (error) {
       console.error("Error updating activity quantity:", error);
       throw new Error("Failed to update activity quantity");
     }
-
+  }
+  static async calculateNewTotalPrice(tripId, tripCollection) {
+    try {
+      const result = await tripCollection.findOne({ _id: new ObjectId(tripId) })
+      // console.log(result, "<==============calculateNewTotalPrice")
+    } catch (error) {
+      throw new GraphQLError("Error calculating new price")
+    }
   }
 }
 
