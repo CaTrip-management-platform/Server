@@ -67,6 +67,7 @@ type Mutation {
     createPayment(tripId: String!, amount: Float!): PaymentResponse!
     deleteActivityFromTrip(tripId: String!, activityId: String!): Response
     updateTripDate(dateInput: UpdateTripDate!, tripId: String!): Response
+    updateTripActivityQuantity(newQuantity:Int, tripId: String!, activityId: String!): Response
 }
 
 `;

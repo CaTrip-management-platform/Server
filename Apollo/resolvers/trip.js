@@ -85,6 +85,12 @@ const resolvers = {
       const result = await updateTripDate(dateInput, tripId, customerId);
       return { message: result };
     },
+    updateTripActivityQuantity: async (_, { newQuantity, tripId, activityId }, contextValue) => {
+      const payload = await contextValue.authentication();
+      const customerId = payload.id;
+      const result = await updateTripActivityQuantity(newQuantity, tripId, activityId, customerId);
+      return { message: result };
+    },
   },
 };
 module.exports = resolvers;
