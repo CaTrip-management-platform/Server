@@ -266,6 +266,48 @@ class Trip {
     }
     return "Trip date successfully updated";
   }
+  static async updateTripActivityQuantity(newQuantity, tripId, activityId, customerId) {
+    const tripCollection = DB.collection("trips");
+    const filter = {
+      _id: new ObjectId(tripId),
+      customerId: new ObjectId(customerId),
+      "activities.activityId": activityId
+    };
+
+    const update = {
+      $set: {
+        "activities.$.quantity": newQuantity
+      }
+    };
+
+    const options = {
+      returnDocument: 'after'
+    };
+
+    try {
+      const result = await tripCollection.findOneAndUpdate(filter, update, options);
+
+      if (!result.value) {
+        throw new Error("Trip not found or you don't have permission to update this trip");
+      }
+
+      // // Recalculate total price if needed
+      // // This is a placeholder - you'll need to implement the actual price calculation logic
+      // const newTotalPrice = calculateNewTotalPrice(result.value);
+
+      // // Update the total price
+      // await tripCollection.updateOne(
+      //   { _id: new ObjectId(tripId) },
+      //   { $set: { totalPrice: newTotalPrice } }
+      // );
+
+      return "Activity quantity updated successfully";
+    } catch (error) {
+      console.error("Error updating activity quantity:", error);
+      throw new Error("Failed to update activity quantity");
+    }
+
+  }
 }
 
 module.exports = Trip;
