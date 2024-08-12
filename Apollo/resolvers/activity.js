@@ -30,13 +30,13 @@ const resolvers = {
   },
   Mutation: {
     addActivityForSeller: async (_, args, contextValue) => {
-      let { title, price, imgurls, description, tags, location, coords } = args;
+      let { title, price, imgUrls, description, tags, location, coords } = args;
       const payload = await contextValue.authentication();
       if (payload.role == "admin") {
         let postResult = Activity.addActivityForSeller(
           title,
           price,
-          imgurls,
+          imgUrls,
           description,
           tags,
           location,
@@ -55,7 +55,7 @@ const resolvers = {
         activityId,
         title,
         types,
-        imgurls,
+        imgUrls,
         description,
         tags,
         location,
@@ -67,7 +67,7 @@ const resolvers = {
         activityId,
         title,
         types,
-        imgurls,
+        imgUrls,
         description,
         tags,
         location,

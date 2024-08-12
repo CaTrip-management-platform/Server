@@ -43,8 +43,8 @@ const typeDefs = `#graphql
 
 
     type Mutation {
-        addActivityForSeller(title:String, price: Int, imgurls:[String], description:String, tags: [String], location:String, coords:CoordinateInput): Activity
-        updateActivityForseller(activityId:String, title:String, price: String, imgurls:[String], description:String, tags: [String], location:String, coords:CoordinateInput):Activity
+        addActivityForSeller(title:String, price: Int, imgUrls:[String], description:String, tags: [String], location:String, coords:CoordinateInput): Activity
+        updateActivityForseller(activityId:String, title:String, price: String, imgUrls:[String], description:String, tags: [String], location:String, coords:CoordinateInput):Activity
         deleteActivityForSeller(activityId: String!): String
         reviewActivity(activityId:String, content:String, rating:Int):Activity
 
