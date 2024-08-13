@@ -170,31 +170,65 @@ class Trip {
           _id: new ObjectId(tripId),
         },
       },
-      { $unwind: "$activities" },
+      {
+        $project: {
+          destination: 1,
+          totalPrice: 1,
+          paymentStatus: 1,
+          customerId: 1,
+          startDate: 1,
+          endDate: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          customer: 1,
+          activities: {
+            $cond: {
+              if: { $isArray: "$activities" },
+              then: "$activities",
+              else: "$$REMOVE"
+            }
+          }
+        }
+      },
       {
         $lookup: {
           from: "activities",
           localField: "activities.activityId",
           foreignField: "_id",
-          as: "activities.Activity"
+          as: "activitiesDetails"
         }
       },
-
-      { $unwind: "$activities.Activity" },
-
       {
-        $group: {
-          _id: "$_id",
-          destination: { $first: "$destination" },
-          activities: { $push: "$activities" },
-          totalPrice: { $first: "$totalPrice" },
-          paymentStatus: { $first: "$paymentStatus" },
-          customerId: { $first: "$customerId" },
-          startDate: { $first: "$startDate" },
-          endDate: { $first: "$endDate" },
-          createdAt: { $first: "$createdAt" },
-          updatedAt: { $first: "$updatedAt" },
-          customer: { $first: "$customer" }
+        $addFields: {
+          activities: {
+            $map: {
+              input: "$activities",
+              as: "activity",
+              in: {
+                $mergeObjects: [
+                  "$$activity",
+                  {
+                    Activity: {
+                      $arrayElemAt: [
+                        {
+                          $filter: {
+                            input: "$activitiesDetails",
+                            cond: { $eq: ["$$this._id", "$$activity.activityId"] }
+                          }
+                        },
+                        0
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          activitiesDetails: 0
         }
       }
     ];
