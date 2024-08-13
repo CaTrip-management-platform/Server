@@ -17,10 +17,6 @@ const typeDefs = `#graphql
         id: String
         role: String
     }
-
-    type Query {
-        findUserByUserId(id: String): User
-    }
     
     type Mutation {
         createUser(phoneNumber:String, username:String, email:String, password:String): User
