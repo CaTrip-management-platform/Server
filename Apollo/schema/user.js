@@ -14,11 +14,12 @@ const typeDefs = `#graphql
 
     type LoginResponse {
         access_token: String
+        id: String
+        role: String
     }
 
     type Query {
-        findUsers: [User]
-        findUsersByUsername(username:String): [User]
+        findUserByUserId(id: String): User
     }
     
     type Mutation {

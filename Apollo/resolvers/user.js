@@ -1,26 +1,23 @@
-const User = require("../models/User")
+const User = require("../models/User");
 
 const resolvers = {
-    Query: {
-        findUsers: async () => {
-            const data = await User.findAll()
-            return data
-        },
-        findUsersByUsername: async(_,args) =>{
-            const result = await User.findUsersByUsername(args)
-            return result
-        },
+  Query: {
+    findUserByUserId: async (_, { id }) => {
+      console.log(id);
+      const data = await User.findUserById(id);
+      return data;
     },
-    Mutation: {
-        createUser: async (_,args) => {
-            const data = await User.create(args)
-            return data
-        },
-        login: async(_,args) =>{
-            const result = await User.login(args)
-            return { access_token: result }
-        }
-    }
-}
+  },
+  Mutation: {
+    createUser: async (_, args) => {
+      const data = await User.create(args);
+      return data;
+    },
+    login: async (_, args) => {
+      const result = await User.login(args);
+      return result;
+    },
+  },
+};
 
-module.exports = resolvers
+module.exports = resolvers;

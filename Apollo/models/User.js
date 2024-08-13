@@ -77,27 +77,18 @@ class User {
       { id: user._id, role: user.role },
       process.env.JWT_SECRET
     );
-    console.log({ _id: user._id, role: user.role });
-    return token;
-  }
-
-  static async findUsersByUsername({ username }) {
-    const userCollection = DB.collection("users");
-    let results = await userCollection
-      .find({
-        username: {
-          $regex: new RegExp(username, "i"),
-        },
-      })
-      .toArray();
-    console.log(results);
-    return results;
+    console.log({ _id: user._id, role: user.role, username, token });
+    return { access_token: token, id: user._id, role: user.role };
   }
 
   static async findUserById(_id) {
     const userCollection = DB.collection("users");
     console.log(_id);
     let result = await userCollection.findOne({ _id: new ObjectId(_id) });
+
+    if (!result) {
+      throw new GraphQLError("User Not Found");
+    }
     return result;
   }
 }
