@@ -19,14 +19,13 @@ app.get('/', async (req, res) => {
 
 app.post('/', async (req, res) => {
     const { order_id } = req.body;
-    console.log(order_id,"<============")
 
 
     const tripCollection = DB.collection("trips");
 
     try {
         const result = await tripCollection.updateOne(
-            { _id: new ObjectId(order_id) },
+            { _id: new ObjectId(order_id.split(" ")[0]) },
             {
                 $set: {
                     paymentStatus: "Paid",

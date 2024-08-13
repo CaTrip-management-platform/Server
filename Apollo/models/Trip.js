@@ -94,16 +94,18 @@ class Trip {
     if (!trip) {
       throw new GraphQLError("Trip not found");
     }
-    const orderId = tripId
+    const orderId = `${tripId} ${(new Date).toISOString()}`
+
     let parameter = {
       transaction_details: {
-        order_id: tripId,
+        order_id: orderId,
         gross_amount: amount,
       },
       credit_card: {
         secure: true,
       },
     };
+    console.log(parameter,"<==parameter")
     try {
       const transaction = await snap.createTransaction(parameter);
       console.log(transaction.redirect_url);
