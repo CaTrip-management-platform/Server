@@ -33,10 +33,10 @@ class User {
       throw new GraphQLError("Username already exists");
     }
     console.log("test");
-    const existingEmail = await userCollection.findOne({ email });
-    if (existingEmail) {
-      throw new GraphQLError("Email already exists");
-    }
+    // const existingEmail = await userCollection.findOne({ email });
+    // if (existingEmail) {
+    //   throw new GraphQLError("Email already exists");
+    // }
 
     password = hashPassword(password);
     let result = await userCollection.insertOne({
@@ -46,7 +46,7 @@ class User {
       password,
       role: "customer",
     });
-    console.log(await userCollection.findOne({ _id: result.insertedId }));
+    // console.log(await userCollection.findOne({ _id: result.insertedId }));
     return await userCollection.findOne({ _id: result.insertedId });
   }
 
@@ -71,7 +71,7 @@ class User {
       { id: user._id, role: user.role },
       process.env.JWT_SECRET
     );
-    console.log({ _id: user._id, role: user.role, username, token });
+    // console.log({ _id: user._id, role: user.role, username, token });
     return { access_token: token, id: user._id, role: user.role };
   }
   static async findUserById(id) {

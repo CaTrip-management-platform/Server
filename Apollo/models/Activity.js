@@ -124,21 +124,11 @@ class Activity {
       userId: objectIduserId,
     });
 
-    if (!found) {
-      throw new Error(
-        "Activity not found or seller does not have permission to update"
-      );
-    }
-
     const result = await activityCollection.findOneAndUpdate(
       { _id: objectActivityId, userId: objectIduserId },
       { $set: { title, types, price, imgUrls, description, tags, location, coords } },
       { returnDocument: "after" }
     );
-
-    if (!result) {
-      throw new Error("Update operation failed");
-    }
 
     return result.value || result;
   }

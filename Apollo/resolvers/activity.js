@@ -28,7 +28,7 @@ const resolvers = {
     addActivityForSeller: async (_, args, contextValue) => {
       let { title, price, imgUrls, description, tags, location, coords } = args;
       const payload = await contextValue.authentication();
-      if (payload.role == "admin") {
+      if (payload && payload.role == "admin") {
         let postResult = Activity.addActivityForSeller(
           title,
           price,

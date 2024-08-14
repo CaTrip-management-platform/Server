@@ -46,7 +46,6 @@ describe('User', () => {
         }
       }
     `;
-
     const uniqueUsername = `e2euser${Date.now()}`;
     const variables = {
       phoneNumber: '1234567890',
@@ -54,7 +53,6 @@ describe('User', () => {
       email: `${uniqueUsername}@example.com`,
       password: 'password123',
     };
-
     const response = await request(url)
       .post('/')
       .send({ query: mutation, variables });
@@ -64,6 +62,57 @@ describe('User', () => {
     expect(response.body.data.createUser).toHaveProperty('username');
     expect(response.body.data.createUser).toHaveProperty('email');
   });
+
+
+  it('register fail format', async () => {
+    const mutation = `
+      mutation CreateUser($phoneNumber: String, $username: String, $email: String, $password: String) {
+        createUser(phoneNumber: $phoneNumber, username: $username, email: $email, password: $password) {
+          _id
+          username
+          email
+        }
+      }
+    `;
+    const uniqueUsername = `e2euser${Date.now()}`;
+    const variables = {
+      phoneNumber: '1234567890',
+      username: uniqueUsername,
+      email: `${uniqueUsername}`,
+      password: 'password123',
+    };
+    const response = await request(url)
+      .post('/')
+      .send({ query: mutation, variables });
+    expect(response.body.errors[0]).toHaveProperty('message');
+  });
+
+  it('register fail username already exist', async () => {
+    const mutation = `
+      mutation CreateUser($phoneNumber: String, $username: String, $email: String, $password: String) {
+        createUser(phoneNumber: $phoneNumber, username: $username, email: $email, password: $password) {
+          _id
+          username
+          email
+        }
+      }
+    `;
+    const uniqueUsername = `e2euser${Date.now()}`;
+    const variables = {
+      phoneNumber: '1234567890',
+      username: 'maman',
+      email: `${uniqueUsername}@example.com`,
+      password: 'password123',
+    };
+    const response = await request(url)
+      .post('/')
+      .send({ query: mutation, variables });
+    expect(response.body).toHaveProperty('errors');
+  });
+
+ 
+
+
 
   it('should login with the created user', async () => {
     const mutation = `
@@ -85,6 +134,94 @@ describe('User', () => {
 
     expect(response.body.errors).toBeUndefined();
     expect(response.body.data.login).toHaveProperty('access_token');
+  });
+
+
+
+  it('login no username', async () => {
+    const mutation = `
+      mutation Login($username: String, $password: String) {
+        login(username: $username, password: $password) {
+          access_token
+        }
+      }
+    `;
+
+    const variables = {
+      username: '',
+      password: 'password123',
+    };
+
+    const response = await request(url)
+      .post('/')
+      .send({ query: mutation, variables });
+
+    expect(response.body).toHaveProperty("errors");
+  });
+
+
+  it('login no password', async () => {
+    const mutation = `
+      mutation Login($username: String, $password: String) {
+        login(username: $username, password: $password) {
+          access_token
+        }
+      }
+    `;
+
+    const variables = {
+      username: 'e2euser',
+      password: '',
+    };
+
+    const response = await request(url)
+      .post('/')
+      .send({ query: mutation, variables });
+
+    expect(response.body).toHaveProperty("errors");
+  });
+
+
+  it('login invalid username', async () => {
+    const mutation = `
+      mutation Login($username: String, $password: String) {
+        login(username: $username, password: $password) {
+          access_token
+        }
+      }
+    `;
+
+    const variables = {
+      username: 'e2euserjndkgjngkdjnfkjnkf',
+      password: 'password123',
+    };
+
+    const response = await request(url)
+      .post('/')
+      .send({ query: mutation, variables });
+
+    expect(response.body).toHaveProperty("errors");
+  });
+
+  it('login invalid password', async () => {
+    const mutation = `
+      mutation Login($username: String, $password: String) {
+        login(username: $username, password: $password) {
+          access_token
+        }
+      }
+    `;
+
+    const variables = {
+      username: 'e2euser',
+      password: 'password123fknsjfksjdfksjdf',
+    };
+
+    const response = await request(url)
+      .post('/')
+      .send({ query: mutation, variables });
+
+    expect(response.body).toHaveProperty("errors");
   });
 });
  
