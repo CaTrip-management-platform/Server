@@ -109,7 +109,8 @@ describe('Trip', () => {
     });
 
 
-    it('should addTrip', async () => {
+
+     it('should fail endDate addTrip', async () => {
         const mutation = `
       mutation Mutation($tripInput: NewTrip) {
   addTrip(tripInput: $tripInput) {
@@ -119,6 +120,51 @@ describe('Trip', () => {
 `;
         const variables = {
             tripInput: {
+                destination: "Mars",
+                endDate: "",
+                startDate: "01-01-2050",
+            }
+        };
+        const response = await request(url)
+            .post('/')
+            .send({ query: mutation, variables });
+        expect(response.body).toHaveProperty("errors");
+    });
+
+
+    it('should fail startDate addTrip', async () => {
+        const mutation = `
+      mutation Mutation($tripInput: NewTrip) {
+  addTrip(tripInput: $tripInput) {
+    message
+  }
+}
+`;
+        const variables = {
+            tripInput: {
+                destination: "Mars",
+                endDate: "01-01-2050",
+                startDate: "",
+            }
+        };
+        const response = await request(url)
+            .post('/')
+            .send({ query: mutation, variables });
+        expect(response.body).toHaveProperty("errors");
+    });
+
+
+    it('should fail destination addTrip', async () => {
+        const mutation = `
+      mutation Mutation($tripInput: NewTrip) {
+  addTrip(tripInput: $tripInput) {
+    message
+  }
+}
+`;
+        const variables = {
+            tripInput: {
+                destination: "",
                 endDate: "01-01-2051",
                 startDate: "01-01-2050",
             }
@@ -152,7 +198,6 @@ describe('Trip', () => {
             .send({ query: mutation, variables });
         expect(response.body.data).toHaveProperty('addActivityToTrip');
     });
-
 
 
     it('updateTripActivityQuantity Success', async () => {
@@ -222,6 +267,7 @@ mutation Mutation($tripId: String!, $activityId: String!) {
     });
 
 
+
     it('createPayment Success', async () => {
         const mutation = `
 mutation Mutation($tripId: String!, $amount: Float!) {
@@ -238,6 +284,24 @@ mutation Mutation($tripId: String!, $amount: Float!) {
             .post('/')
             .send({ query: mutation, variables });
         expect(response.body.data).toHaveProperty('createPayment');
+    });
+
+    it('createPayment Success', async () => {
+        const mutation = `
+mutation Mutation($tripId: String!, $amount: Float!) {
+  createPayment(tripId: $tripId, amount: $amount) {
+    orderId
+    redirectUrl
+    success
+    token}}`;
+        const variables = {
+                amount: 303030,
+                tripId: "384938493894384938498"
+        };
+        const response = await request(url)
+            .post('/')
+            .send({ query: mutation, variables });
+        expect(response.body).toHaveProperty('errors');
     });
 
 

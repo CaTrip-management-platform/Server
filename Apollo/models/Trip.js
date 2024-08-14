@@ -29,12 +29,7 @@ class Trip {
       createdAt: new Date(),
       updatedAt: new Date(),
     });
-
-    if (result.acknowledged) {
       return { message: result.insertedId };
-    } else {
-      throw new GraphQLError("failed to add trip");
-    }
   }
 
   static async deleteTrip(tripId, customerId) {
@@ -75,20 +70,13 @@ class Trip {
         },
       }
     );
-
-    if (result.modifiedCount) {
       return { message: "Success add new activity to your trip" };
-    } else {
-      throw new GraphQLError("Trip not found");
-    }
+  
   }
 
   static async createPayment(tripId, amount) {
     const tripCollection = DB.collection("trips");
     const trip = await tripCollection.findOne({ _id: new ObjectId(tripId) });
-    if (!trip) {
-      throw new GraphQLError("Trip not found");
-    }
     const orderId = `${tripId} ${(new Date).toISOString()}`
 
     let parameter = {
@@ -280,12 +268,7 @@ class Trip {
         },
       }
     );
-
-    if (result.modifiedCount > 0) {
       return { message: "Activity deleted from trip" };
-    } else {
-      throw new GraphQLError("Failed to delete activity from trip");
-    }
   }
   static async updateTripDate(dateInput, tripId, customerId) {
     const { startDate, endDate } = dateInput;
