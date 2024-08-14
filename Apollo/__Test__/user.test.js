@@ -15,14 +15,12 @@ describe('User', () => {
     client = new MongoClient(uri);
     await client.connect();
     db = client.db('CaTrip');
-    
-    
+
     const apolloServer = new ApolloServer({
-      typeDefs: require('../schema/user'),  
-      resolvers: require('../resolvers/user'), 
+      typeDefs: require('../schema/user'),
+      resolvers: require('../resolvers/user'),
     });
 
-   
     const { url: serverUrl } = await startStandaloneServer(apolloServer, {
       listen: { port: 0 },
     });
@@ -32,13 +30,7 @@ describe('User', () => {
   });
 
   afterAll(async () => {
-    
     await db.collection('users2').deleteMany({});
-    
-   
-    const remainingUsers = await db.collection('users2').find({}).toArray();
-    console.log('Remaining users after deletion:', remainingUsers);
-
     await client.close();
     await server?.stop();
   });
@@ -54,10 +46,11 @@ describe('User', () => {
       }
     `;
 
+    const uniqueUsername = `e2euser${Date.now()}`;
     const variables = {
       phoneNumber: '1234567890',
-      username: `e2euser${Date.now()}` ,
-      email: `e2euser${Date.now()}@example.com`,
+      username: uniqueUsername,
+      email: `${uniqueUsername}@example.com`,
       password: 'password123',
     };
 
@@ -69,54 +62,6 @@ describe('User', () => {
     expect(response.body.data.createUser).toHaveProperty('_id');
     expect(response.body.data.createUser).toHaveProperty('username');
     expect(response.body.data.createUser).toHaveProperty('email');
-  });
-
-  it('should find users', async () => {
-    const query = `
-      query {
-        findUsers {
-          _id
-          username
-          email
-        }
-      }
-    `;
-
-    const response = await request(url)
-      .post('/')
-      .send({ query });
-
-    expect(response.body.errors).toBeUndefined();
-    expect(response.body.data.findUsers).toEqual(expect.any(Array));
-    expect(response.body.data.findUsers.length).toBeGreaterThan(0);
-    expect(response.body.data.findUsers[0]).toHaveProperty('_id');
-    expect(response.body.data.findUsers[0]).toHaveProperty('username');
-    expect(response.body.data.findUsers[0]).toHaveProperty('email');
-  });
-
-  it('should find users by username', async () => {
-    const query = `
-      query FindUsersByUsername($username: String) {
-        findUsersByUsername(username: $username) {
-          _id
-          username
-          email
-        }
-      }
-    `;
-
-    const variables = { username: 'e2euser' };
-
-    const response = await request(url)
-      .post('/')
-      .send({ query, variables });
-
-    expect(response.body.errors).toBeUndefined();
-    expect(response.body.data.findUsersByUsername).toEqual(expect.any(Array));
-    expect(response.body.data.findUsersByUsername.length).toBeGreaterThan(0);
-    expect(response.body.data.findUsersByUsername[0]).toHaveProperty('_id');
-    expect(response.body.data.findUsersByUsername[0]).toHaveProperty('username');
-    expect(response.body.data.findUsersByUsername[0].username).toBe('e2euser');
   });
 
   it('should login with the created user', async () => {
@@ -141,3 +86,4 @@ describe('User', () => {
     expect(response.body.data.login).toHaveProperty('access_token');
   });
 });
+ 

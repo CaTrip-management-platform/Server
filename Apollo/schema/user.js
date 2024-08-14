@@ -12,6 +12,10 @@ const typeDefs = `#graphql
         message: String
     }
 
+    type Query {
+    me: User
+    }
+
     type LoginResponse {
         access_token: String
         id: String
