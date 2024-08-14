@@ -15,14 +15,22 @@ describe('Activity', () => {
     client = new MongoClient(uri);
     await client.connect();
     db = client.db('CaTrip');
-    
+
     const apolloServer = new ApolloServer({
-      typeDefs: require('../schema/activity'),  
-      resolvers: require('../resolvers/activity'), 
+      typeDefs: require('../schema/activity'),
+      resolvers: require('../resolvers/activity'),
     });
 
     const { url: serverUrl } = await startStandaloneServer(apolloServer, {
       listen: { port: 0 },
+      context: async ({ req, res }) => {
+        return {
+          authentication: async () => {
+            const payload = { id: "66b1ab1a1f8a522270a599d2", role: "admin" }
+            return payload;
+          },
+        }
+      }
     });
 
     server = apolloServer;
@@ -30,9 +38,9 @@ describe('Activity', () => {
   });
 
   afterAll(async () => {
-    await db.collection('activities2').deleteMany({});
-    
-    const remainingActivities = await db.collection('activities2').find({}).toArray();
+    await db.collection('activities').deleteMany({});
+
+    const remainingActivities = await db.collection('activities').find({}).toArray();
     console.log('Remaining activities after deletion:', remainingActivities);
 
     await client.close();
@@ -40,7 +48,7 @@ describe('Activity', () => {
   });
 
   let testActivityId;
-  let testSellerId = 'seller123'; // Use a valid seller ID
+  const testSellerId = '66b1ab1a1f8a522270a599d2';
 
   it('should add a new activity for a seller', async () => {
     const mutation = `
@@ -77,7 +85,7 @@ describe('Activity', () => {
 
     expect(response.body.errors).toBeUndefined();
     expect(response.body.data.addActivityForSeller).toHaveProperty('_id');
-    testActivityId = response.body.data.addActivityForSeller._id; // Store the ID for further tests
+    testActivityId = response.body.data.addActivityForSeller._id; 
   });
 
   it('should get all activities', async () => {
@@ -136,13 +144,13 @@ describe('Activity', () => {
         }
       }
     `;
-
-    const variables = { _id: testActivityId };
-
+  
+    const variables = { id: testActivityId };
+  
     const response = await request(url)
       .post('/')
       .send({ query, variables });
-
+  
     expect(response.body.errors).toBeUndefined();
     expect(response.body.data.getActivityById).toHaveProperty('_id', testActivityId);
     expect(response.body.data.getActivityById).toHaveProperty('title', 'Test Activity');
@@ -170,5 +178,93 @@ describe('Activity', () => {
     expect(response.body.data.getActivityBySellerId.length).toBeGreaterThan(0);
     expect(response.body.data.getActivityBySellerId[0]).toHaveProperty('_id');
     expect(response.body.data.getActivityBySellerId[0]).toHaveProperty('title');
+  });
+
+  it('should update an activity for a seller', async () => {
+    const mutation = `
+      mutation UpdateActivityForSeller($activityId: String!, $title: String, $price: Int, $imgUrls: [String], $description: String, $tags: [String], $location: String, $coords: CoordinateInput) {
+        updateActivityForseller(activityId: $activityId, title: $title, price: $price, imgUrls: $imgUrls, description: $description, tags: $tags, location: $location, coords: $coords) {
+          _id
+          title
+          price
+          imgUrls
+          description
+          tags
+          location
+          coords {
+            latitude
+            longitude
+          }
+        }
+      }
+    `;
+  
+    const variables = {
+      activityId: testActivityId,
+      title: 'Updated Test Activity',
+      price: 150,
+      imgUrls: ['http://example.com/new-image.jpg'],
+      description: 'This is an updated test activity.',
+      tags: ['updated', 'activity'],
+      location: 'Updated Location',
+      coords: { latitude: '11.0', longitude: '21.0' },
+    };
+  
+    const response = await request(url)
+      .post('/')
+      .send({ query: mutation, variables });
+  
+    expect(response.body.errors).toBeUndefined();
+    expect(response.body.data.updateActivityForseller).toHaveProperty('_id', testActivityId);
+    expect(response.body.data.updateActivityForseller).toHaveProperty('title', 'Updated Test Activity');
+    expect(response.body.data.updateActivityForseller).toHaveProperty('price', 150);
+    expect(response.body.data.updateActivityForseller).toHaveProperty('coords', { latitude: '11.0', longitude: '21.0' });
+  });
+
+  it('should delete an activity for a seller', async () => {
+    const mutation = `
+      mutation DeleteActivityForSeller($activityId: String!) {
+        deleteActivityForSeller(activityId: $activityId)
+      }
+    `;
+  
+    const variables = { activityId: testActivityId };
+  
+    const response = await request(url)
+      .post('/')
+      .send({ query: mutation, variables });
+  
+    expect(response.body.errors).toBeUndefined();
+    expect(response.body.data.deleteActivityForSeller).toBe('Activity deleted');
+  });
+
+  it('should add a review to an activity', async () => {
+    const mutation = `
+      mutation ReviewActivity($activityId: String!, $content: String!, $rating: Int!) {
+        reviewActivity(activityId: $activityId, content: $content, rating: $rating) {
+          _id
+          reviews {
+            username
+            content
+            rating
+          }
+        }
+      }
+    `;
+  
+    const variables = {
+      activityId: testActivityId,
+      content: 'Great activity!',
+      rating: 5,
+    };
+  
+    const response = await request(url)
+      .post('/')
+      .send({ query: mutation, variables });
+  
+    expect(response.body.errors).toBeUndefined();
+    expect(response.body.data.reviewActivity).toHaveProperty('_id', testActivityId);
+    expect(response.body.data.reviewActivity.reviews[0]).toHaveProperty('content', 'Great activity!');
+    expect(response.body.data.reviewActivity.reviews[0]).toHaveProperty('rating', 5);
   });
 });
