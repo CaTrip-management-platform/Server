@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --runInBand --coverage --watchAll --verbose",
+    "test": "jest --runInBand --coverage --watchAll --verbose --detectOpenHandles ",
     "dev": "npx nodemon app"
   },
   "keywords": [],

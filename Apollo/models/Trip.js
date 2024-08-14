@@ -105,10 +105,8 @@ class Trip {
         secure: true,
       },
     };
-    console.log(parameter,"<==parameter")
     try {
       const transaction = await snap.createTransaction(parameter);
-      console.log(transaction.redirect_url);
       return {
         success: true,
         redirectUrl: transaction.redirect_url,
@@ -159,7 +157,7 @@ class Trip {
     ];
     const tripCollection = DB.collection("trips");
     const result = await tripCollection.aggregate(pipeline).toArray();
-    // console.log(result[0].activities);
+    console.log(result.activities);
     return result;
   }
 
@@ -234,7 +232,6 @@ class Trip {
     ];
     const tripCollection = DB.collection("trips");
     const result = await tripCollection.aggregate(pipeline).toArray();
-    console.log(result[0].activities)
     return result
   }
 
