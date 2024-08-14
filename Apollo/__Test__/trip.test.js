@@ -4,7 +4,7 @@ const { ApolloServer } = require('@apollo/server');
 const { startStandaloneServer } = require('@apollo/server/standalone');
 const request = require('supertest');
 const Activity = require("../models/Activity");
-const uri = 'mongodb+srv://rafiframa:mkfgTcI40kIlHUlb@cluster0.tdm7enh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const uri = 'mongodb+srv://dddtydrmwn:Didatama123.@cluster0.p2kh6c1.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
 describe('Trip', () => {
     let client;

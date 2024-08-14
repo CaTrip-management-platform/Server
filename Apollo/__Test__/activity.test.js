@@ -221,23 +221,6 @@ describe('Activity', () => {
     expect(response.body.data.updateActivityForseller).toHaveProperty('coords', { latitude: '11.0', longitude: '21.0' });
   });
 
-  it('should delete an activity for a seller', async () => {
-    const mutation = `
-      mutation DeleteActivityForSeller($activityId: String!) {
-        deleteActivityForSeller(activityId: $activityId)
-      }
-    `;
-  
-    const variables = { activityId: testActivityId };
-  
-    const response = await request(url)
-      .post('/')
-      .send({ query: mutation, variables });
-  
-    expect(response.body.errors).toBeUndefined();
-    expect(response.body.data.deleteActivityForSeller).toBe('Activity deleted');
-  });
-
   it('should add a review to an activity', async () => {
     const mutation = `
       mutation ReviewActivity($activityId: String!, $content: String!, $rating: Int!) {
@@ -267,4 +250,23 @@ describe('Activity', () => {
     expect(response.body.data.reviewActivity.reviews[0]).toHaveProperty('content', 'Great activity!');
     expect(response.body.data.reviewActivity.reviews[0]).toHaveProperty('rating', 5);
   });
+
+  it('should delete an activity for a seller', async () => {
+    const mutation = `
+      mutation DeleteActivityForSeller($activityId: String!) {
+        deleteActivityForSeller(activityId: $activityId)
+      }
+    `;
+  
+    const variables = { activityId: testActivityId };
+  
+    const response = await request(url)
+      .post('/')
+      .send({ query: mutation, variables });
+  
+    expect(response.body.errors).toBeUndefined();
+    expect(response.body.data.deleteActivityForSeller).toBe('Activity deleted');
+  });
+
+ 
 });

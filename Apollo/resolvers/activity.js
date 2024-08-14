@@ -5,12 +5,8 @@ const User = require("../models/User");
 const resolvers = {
   Query: {
     getAllActivity: async () => {
-      try {
         let postResult = await Activity.findAll();
         return postResult;
-      } catch (err) {
-        console.log(err);
-      }
     },
     searchActivity: async (_, args) => {
       let { searchTerm } = args;
@@ -54,6 +50,7 @@ const resolvers = {
       let {
         activityId,
         title,
+        price,
         types,
         imgUrls,
         description,
@@ -66,6 +63,7 @@ const resolvers = {
       let postResult = Activity.updateActivityForseller(
         activityId,
         title,
+        price,
         types,
         imgUrls,
         description,
@@ -85,8 +83,6 @@ const resolvers = {
           payload.id
         );
         return deleteResult;
-      } else {
-        throw new GraphQLError("You are not authorize");
       }
     },
 

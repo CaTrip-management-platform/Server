@@ -95,6 +95,7 @@ class Activity {
   static async updateActivityForseller(
     activityId,
     title,
+    price,
     types,
     imgUrls,
     description,
@@ -109,6 +110,7 @@ class Activity {
     console.log(
       activityId,
       title,
+      price,
       types,
       imgUrls,
       description,
@@ -130,7 +132,7 @@ class Activity {
 
     const result = await activityCollection.findOneAndUpdate(
       { _id: objectActivityId, userId: objectIduserId },
-      { $set: { title, types, imgUrls, description, tags, location, coords } },
+      { $set: { title, types, price, imgUrls, description, tags, location, coords } },
       { returnDocument: "after" }
     );
 
@@ -174,6 +176,7 @@ class Activity {
     const findOne = await postCollection.findOne({
       _id: new ObjectId(activityId),
     });
+    console.log(findOne,"<=======================")
     return findOne;
   }
 }

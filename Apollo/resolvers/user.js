@@ -2,11 +2,7 @@ const User = require("../models/User");
 
 const resolvers = {
   Query: {
-    findUserById: async (_, args) => {
-      const result = await User.findById(args.id);
 
-      return result;
-    },
   },
   Mutation: {
     createUser: async (_, args) => {

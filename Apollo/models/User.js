@@ -74,7 +74,7 @@ class User {
     console.log({ _id: user._id, role: user.role, username, token });
     return { access_token: token, id: user._id, role: user.role };
   }
-  static async findById(id) {
+  static async findUserById(id) {
     const userCollection = DB.collection("users");
     let user = await userCollection.findOne({ _id: new ObjectId(id) });
     if (!user) {
