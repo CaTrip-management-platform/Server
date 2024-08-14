@@ -19,6 +19,7 @@ describe('User', () => {
     const apolloServer = new ApolloServer({
       typeDefs: require('../schema/user'),
       resolvers: require('../resolvers/user'),
+      
     });
 
     const { url: serverUrl } = await startStandaloneServer(apolloServer, {
