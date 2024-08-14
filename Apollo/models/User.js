@@ -14,7 +14,6 @@ class User {
     password: z.string().min(5, "Password must be at least 5 characters long"),
   });
 
-
   static async create({ phoneNumber, username, email, password }) {
     const validationResult = User.userSchema.safeParse({
       phoneNumber,
@@ -74,6 +73,14 @@ class User {
     );
     console.log({ _id: user._id, role: user.role, username, token });
     return { access_token: token, id: user._id, role: user.role };
+  }
+  static async findById(id) {
+    const userCollection = DB.collection("users");
+    let user = await userCollection.findOne({ _id: new ObjectId(id) });
+    if (!user) {
+      throw new GraphQLError("User not found");
+    }
+    return user;
   }
 }
 

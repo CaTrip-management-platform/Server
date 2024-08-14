@@ -12,9 +12,6 @@ const typeDefs = `#graphql
         message: String
     }
 
-    type Query {
-    me: User
-    }
 
     type LoginResponse {
         access_token: String
@@ -22,6 +19,9 @@ const typeDefs = `#graphql
         role: String
     }
     
+    type Query {
+        findUserById(id: String): User
+    }
     type Mutation {
         createUser(phoneNumber:String, username:String, email:String, password:String): User
         login(username: String, password:String): LoginResponse
