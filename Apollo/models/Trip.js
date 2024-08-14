@@ -31,7 +31,7 @@ class Trip {
     });
 
     if (result.acknowledged) {
-      return { message: "success add a new trip" };
+      return { message: result.insertedId };
     } else {
       throw new GraphQLError("failed to add trip");
     }
@@ -44,12 +44,7 @@ class Trip {
       _id: new ObjectId(tripId),
       customerId: new ObjectId(customerId),
     });
-
-    if (result.deletedCount === 0) {
-      throw new GraphQLError("failed delete the trip");
-    } else {
-      return { message: "Trip deleted" };
-    }
+    return { message: "Trip deleted" };
   }
 
   static async addActivityTrip(activityInput, customerId) {
@@ -114,7 +109,6 @@ class Trip {
         token: transaction.token,
       };
     } catch (error) {
-      console.error("Error creating Midtrans transaction:", error);
       throw new GraphQLError("Error creating payment");
     }
   }
@@ -310,9 +304,6 @@ class Trip {
       },
     };
     const result = await tripCollection.updateOne(filter, updateDoc);
-    if (!result.acknowledged) {
-      throw new GraphQLError("Failed to update trip date");
-    }
     return "Trip date successfully updated";
   }
 
@@ -335,55 +326,41 @@ class Trip {
     const options = {
       returnDocument: 'after'
     };
+    const found = await tripCollection.findOne(filter);
 
-    try {
-      const found = await tripCollection.findOne(filter);
-
-      //getquantity
-      const item = found.activities.find(item => item.activityId.equals(new ObjectId(activityId)));
-      const beforeQuantity = item.quantity
-      const beforePrice = item.price
+    //getquantity
+    const item = found.activities.find(item => item.activityId.equals(new ObjectId(activityId)));
+    const beforeQuantity = item.quantity
+    const beforePrice = item.price
 
 
-      let after = found.activities.map(item => {
-        if (item.activityId.equals(new ObjectId(activityId))) {
-          return { ...item, quantity: newQuantity, price: beforePrice / beforeQuantity * newQuantity };
-        }
-        return item;
-      })
+    let after = found.activities.map(item => {
+      if (item.activityId.equals(new ObjectId(activityId))) {
+        return { ...item, quantity: newQuantity, price: beforePrice / beforeQuantity * newQuantity };
+      }
+      return item;
+    })
 
-      const newTotalPrice = after.reduce((acc, item) => {
-        return acc + item.price;
-      }, 0);
+    const newTotalPrice = after.reduce((acc, item) => {
+      return acc + item.price;
+    }, 0);
 
 
-      // console.log("beforeQuantity: ", beforeQuantity)
-      // console.log("afterQuantity: ", newQuantity)
-      // console.log("after: ", after)
-      // console.log("newTotalPrice: ", newTotalPrice)
+    // console.log("beforeQuantity: ", beforeQuantity)
+    // console.log("afterQuantity: ", newQuantity)
+    // console.log("after: ", after)
+    // console.log("newTotalPrice: ", newTotalPrice)
 
 
 
-      const result = await tripCollection.findOneAndUpdate(filter, {
-        $set: {
-          activities: after,
-          totalPrice: newTotalPrice
-        }
-      }, options)
+    const result = await tripCollection.findOneAndUpdate(filter, {
+      $set: {
+        activities: after,
+        totalPrice: newTotalPrice
+      }
+    }, options)
 
-      return "Activity quantity updated successfully";
-    } catch (error) {
-      console.error("Error updating activity quantity:", error);
-      throw new Error("Failed to update activity quantity");
-    }
-  }
-  static async calculateNewTotalPrice(tripId, tripCollection) {
-    try {
-      const result = await tripCollection.findOne({ _id: new ObjectId(tripId) })
-      // console.log(result, "<==============calculateNewTotalPrice")
-    } catch (error) {
-      throw new GraphQLError("Error calculating new price")
-    }
+    return "Activity quantity updated successfully";
   }
 }
 
