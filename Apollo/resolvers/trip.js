@@ -18,14 +18,9 @@ const resolvers = {
       const payload = await contextValue.authentication();
       const customerId = payload.id;
       const tripsCache = await redis.get("trips:all");
-      if (tripsCache) {
-        return JSON.parse(tripsCache);
-      } else {
-        const result = await getTrips(customerId);
-        await redis.set("trips:all", JSON.stringify(result));
-
-        return result;
-      }
+      const result = await getTrips(customerId);
+      await redis.set("trips:all", JSON.stringify(result));
+      return result;
     },
     getTripById: async (_, { tripId }, contextValue) => {
       await contextValue.authentication();
